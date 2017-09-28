@@ -1,0 +1,180 @@
+---
+title: "MATH1324 Assignment 3"
+subtitle: "Supermarket Price Wars"
+output: html_notebook
+---
+
+## Group/Individual Details
+
+* Alistair Grevis-James (s3644119)
+
+## Executive Statement
+
+In your own words, provide a brief summary of the investigation. Explain the aim of the investigation, the procedure, sample, variables, main findings and conclusions. Write this section last after you have performed hypothesis testing. (Word count Max: 300 words)
+
+#Introduction
+Coles (founded in blah, part of XY blah, ASX blah)(ref) and Woolworths (founded in blah, part of XY blah, ASX blah)(ref) are the two dominant supermarket chains in Australia(ref) OR summary table with name, number of stores, market cap, ASX... Both Coles and Woolworths market themselves largely on the grounds of affordability (Coles - prices are down, )
+
+Hypothesis A:
+While both claiming to be "low cost" blah blah, invariably, one supermarket chain will have lower prices.
+
+Hypothesis B:
+In an attempt to differentiate themselves from each other as 'low price' (while still maintaining high quality & a wide range), the two major Australian supermarket chains, Coles and Woolworths, will employ different pricing stratergies to show consumers they have the 'lowest prices'.
+
+```{r}
+embed_url("https://www.youtube.com/watch?v=lVSEDRBEbA0&list=PLZ-CbFpL2a-suAVgZ0KKdQzHEZ9KVHKSo&index=6") %>%
+  div(class = "vembedr") %>%
+  div(align = "center")
+```
+
+Embed coles in also
+https://mumbrella.com.au/woolworths-increases-focus-cheap-prices-latest-ad-targeting-families-433968 reference!!!
+
+#Data Collection Methodology
+
+
+## Load Packages and Data
+```{r}
+library(ggplot2)
+library(dplyr)
+install.packages('gsheet')
+library(gsheet)
+ds <- gsheet2tbl('https://drive.google.com/open?id=1_6RZ0HXg7VbgO78oyFfUyZaFOUHYWijy8XH1_jw5tA4')
+# This is a chunk where you can load the necessary data and packages required to reproduce the report
+# You should also include your code required to prepare your data for analysis.
+install.packages("vembedr")
+library(vembedr)
+library("htmltools")
+```
+
+## Summary Statistics
+
+## Data Checking
+The internal structure of the data was first checked with str(). This showed the data was in the form 'data.frame' with 491 observations of 10 variables. Data types consisted of Date, chr, num and int. CB!!!
+```{r}
+#Column check & data types
+sapply(ds, typeof)
+#sapply gives us the column (variable) names & the data types
+#Data tabulated was considered simply as good practise
+```
+
+```{r}
+#Check for nulls WRONG!!!
+ds[rowSums(is.na(ds))==TRUE,]
+#Summary ds will give NAs + preliminary data analysis
+summary(ds)
+```
+
+```{r}
+#Value Counts - checking CHARACTERS
+table(ds$`Allocated Category`)
+```
+
+```{r}
+#Value Counts - checking CHARACTERS
+table(ds$`Native Category`)
+```
+###Coles, coles sale, woolworths, woolworths sale are the prices - at this stage we are checking characters only
+```{r}
+#Value Counts - checking CHARACTERS
+table(ds$`Unit`)
+```
+###We are now going to veiw native histograms for ALLOCATED CATEGORIES
+###Ignore meat & fish
+```{r}
+#Coles (full price), for sugary snack
+mean_coles_sugarySnack <- mean(ds$coles, select(ds$`Allocated Category` = 'Sugary Snack'))
+ds$Coles == 'Sugary Snack'
+
+summary(ds)
+#Native Price Histograms Coles (full price), for sugary snack
+m_all <- mean(bdims$bic.gi)
+sd_all <- sd(bdims$bic.gi)
+hist(bdims$bic.gi, xlim = c(15, 50), ylim = c(0, 0.1), col="grey", xlab="Bicep Girth (male and female)",
+                         main="Histogram of all Resondent's Bicep Girth", freq = FALSE)
+    curve(expr = dnorm(x, mean=m_all, sd = sd_all), col="darkblue", lwd=2, add=TRUE)
+```
+
+
+
+```{r}
+#Value Counts
+sapply(ds, typeof)
+```
+Walk through the data...
+
+Use R to summarise the data from the investigation. 
+
+Include an appropriate plot to help visualise the data. Describe the trend. 
+
+```{r}
+# This is a chunk for your summary statistics and visualisation code
+ds$Coles
+```
+
+
+
+```{r}
+# Sugary Snack Filter
+sugarySnack_filter <- ds$`Allocated Category` == "Sugary Snack"
+sugarySnack_data <- ds[sugarySnack_filter,]
+#'In this instance we will take grams and mL to be equal (as at SLP, 1 mL has a mass of 1 g)
+#Stats - Native
+summary(sugarySnack_data$Coles) #Max = 19
+mean_sugarySnack_coles <- mean(sugarySnack_data$Coles)
+sd_sugarySnack_coles <- sd(sugarySnack_data$Coles)
+hist(sugarySnack_data$Coles, xlim = c(0,20), ylim = c(0, 0.35), col="grey", xlab="Price (variable amount g)",
+                         main="Histogram of Sugary Snacks at Coles (full price)", breaks = 11, freq = FALSE)
+    curve(expr = dnorm(x, mean=mean_sugarySnack_coles, sd = sd_sugarySnack_coles), col="darkblue", lwd=2, add=TRUE)
+```
+
+```{r}
+# Sugary Snack Filter
+sugarySnack_filter <- ds$`Allocated Category` == "Sugary Snack"
+sugarySnack_data <- ds[sugarySnack_filter,]
+#'In this instance we will take grams and mL to be equal (as at SLP, 1 mL has a mass of 1 g)
+#Stats - Native
+summary(sugarySnack_data$'Coles Sale') #Max = 9.5
+mean_sugarySnack_colesSale <- mean(sugarySnack_data$'Coles Sale')
+sd_sugarySnack_colesSale <- sd(sugarySnack_data$'Coles Sale')
+hist(sugarySnack_data$'Coles Sale', xlim = c(0,10), ylim = c(0, 0.5), col="grey", xlab="Price (variable mass)",
+                         main="Histogram of Sugary Snacks at Coles (sale price)", freq = FALSE)
+    curve(expr = dnorm(x, mean=mean_sugarySnack_colesSale, sd = sd_sugarySnack_colesSale), col="darkblue", lwd=2, add=TRUE)
+```
+
+
+```{r}
+# New Column
+#Prior just need to check max min for amounts
+sugarySnack_data$PriceMass <- 1000 / sugarySnack_data$Amount
+sugarySnack_data$Per1000gPrice_Coles <- sugarySnack_data$PriceMass * sugarySnack_data$Coles
+```
+
+###Say we have 500g for $10, then 1000g would cost $20. To obtain a 1000g normalizing factor, we go (1000(g)/amount(g)), then multiply by price. As above, (1000g/500g)*$10 = $20 per kg 
+
+```{r}
+#Bins makes no difference for this (default = bins)
+mean_Per1000gPrice_Coles <- mean(sugarySnack_data$Per1000gPrice_Coles)
+sd_Per1000gPrice_Coles <- sd(sugarySnack_data$Per1000gPrice_Coles)
+hist(sugarySnack_data$Per1000gPrice_Coles, xlim = c(-10,100), ylim = c(0, 0.04), col="grey", xlab="Price (per 1000g)",
+                         main="Histogram of Sugary Snacks at Coles (full price)", freq = FALSE)
+    curve(expr = dnorm(x, mean=mean_Per1000gPrice_Coles, sd = sd_Per1000gPrice_Coles), col="darkblue", lwd=2, add=TRUE)
+```
+
+## Hypothesis Test
+
+Use R to perform an appropriate hypothesis test to determine which supermarket is the cheapest. You need to explain your choice of hypothesis test, any assumptions and the significance level. 
+
+```{r}
+# This is a chunk for your hypothesis testing code.
+```
+
+## Interpretation
+
+Interpret the results of the hypothesis test by interpreting the $p$-value and confidence intervals and commenting on the statistical significance of the findings. 
+
+## Discussion 
+
+Discuss the findings of your investigation. What did you conclude? What were the strengths and limitations of your investigation? What improvements could be made or what would you do differently next time?
+
+
