@@ -112,62 +112,117 @@ ds$Coles
 ```
 
 ```{r}
-#Creating 
-#Filtering  Sugary Snack Filter
+#Creating new data set for allocated category sugary snack data
+#Creating a filter
 sugarySnack_filter <- ds$`Allocated Category` == "Sugary Snack"
+#Creating the data set
 sugarySnack_data <- ds[sugarySnack_filter,]
-#'In this instance we will take grams and mL to be equal (as at SLP, 1 mL has a mass of 1 g)
+#In this instance we will take grams and mL to be equal (as at SLP, 1 mL has a mass of 1 g)
+
+#Check units
+table(sugarySnack_data$`Unit`)
+
+sugarySnack_data$PriceMass <- 1000 / sugarySnack_data$Amount
+sugarySnack_data$Per1000gPrice_Coles <- sugarySnack_data$PriceMass * sugarySnack_data$Coles
+sugarySnack_data$Per1000gPrice_WW <- sugarySnack_data$PriceMass * sugarySnack_data$Woolworths
+sugarySnack_data$Per1000gPrice_ColesSale <- sugarySnack_data$PriceMass * sugarySnack_data$'Coles Sale'
+sugarySnack_data$Per1000gPrice_WWSale <- sugarySnack_data$PriceMass * sugarySnack_data$'Woolworths Sale'
 #Stats - Native
-summary(sugarySnack_data$Coles) #Max = 19
+
 mean_sugarySnack_coles <- mean(sugarySnack_data$Coles)
 sd_sugarySnack_coles <- sd(sugarySnack_data$Coles)
 hist(sugarySnack_data$Coles, xlim = c(0,20), ylim = c(0, 0.35), col="grey", xlab="Price AUD (variable amount g or mL)",main="Histogram of Sugary Snacks at Coles (full price)", breaks = 11, freq = FALSE)
 curve(expr = dnorm(x, mean=mean_sugarySnack_coles, sd = sd_sugarySnack_coles), col="darkblue", lwd=2,   add=TRUE)
-```
 
-```{r}
-# Sugary Snack Filter
-sugarySnack_filter <- ds$`Allocated Category` == "Sugary Snack"
-sugarySnack_data <- ds[sugarySnack_filter,]
-#'In this instance we will take grams and mL to be equal (as at SLP, 1 mL has a mass of 1 g)
-#Stats - Native
-summary(sugarySnack_data$'Coles Sale') #Max = 9.5
 mean_sugarySnack_colesSale <- mean(sugarySnack_data$'Coles Sale')
 sd_sugarySnack_colesSale <- sd(sugarySnack_data$'Coles Sale')
 hist(sugarySnack_data$'Coles Sale', xlim = c(0,10), ylim = c(0, 0.5), col="grey", xlab="Price AUD (variable amount g or mL)", main="Histogram of Sugary Snacks at Coles (sale price)", freq = FALSE)
 curve(expr = dnorm(x, mean=mean_sugarySnack_colesSale, sd = sd_sugarySnack_colesSale), col="darkblue", lwd=2, add=TRUE)
-```
 
+mean_Per1000gPrice_Coles <- mean(sugarySnack_data$Per1000gPrice_Coles)
+sd_Per1000gPrice_Coles <- sd(sugarySnack_data$Per1000gPrice_Coles)
+hist(sugarySnack_data$Per1000gPrice_Coles, xlim = c(-10,100), ylim = c(0, 0.04), col="grey", xlab="Price (per 1000 g or mL)", main="Histogram of Sugary Snacks at Coles (full price)", freq = FALSE)
+curve(expr = dnorm(x, mean=mean_Per1000gPrice_Coles, sd = sd_Per1000gPrice_Coles), col="darkblue", lwd=2, add=TRUE)
 
-```{r}
-# New Column
-#Prior just need to check max min for amounts
-sugarySnack_data$PriceMass <- 1000 / sugarySnack_data$Amount
-sugarySnack_data$Per1000gPrice_Coles <- sugarySnack_data$PriceMass * sugarySnack_data$Coles
+mean_Per1000gPrice_ColesSale <- mean(sugarySnack_data$Per1000gPrice_ColesSale)
+sd_Per1000gPrice_ColesSale <- sd(sugarySnack_data$Per1000gPrice_ColesSale)
+hist(sugarySnack_data$Per1000gPrice_ColesSale, xlim = c(-10,100), ylim = c(0, 0.05), col="grey", xlab="Price (per 1000 g or mL)", main="Histogram of Sugary Snacks at Coles (sale price)", freq = FALSE)
+curve(expr = dnorm(x, mean=mean_Per1000gPrice_ColesSale, sd = sd_Per1000gPrice_ColesSale), col="darkblue", lwd=2, add=TRUE)
+
+mean_sugarySnack_Woolworths <- mean(sugarySnack_data$Woolworths)
+sd_sugarySnack_Woolworths <- sd(sugarySnack_data$Woolworths)
+hist(sugarySnack_data$Woolworths, xlim = c(0,20), ylim = c(0, 0.35), col="grey", xlab="Price AUD (variable amount g or mL)",main="Histogram of Sugary Snacks at WW (full price)", breaks = 11, freq = FALSE)
+curve(expr = dnorm(x, mean=mean_sugarySnack_Woolworths, sd = sd_sugarySnack_Woolworths), col="darkblue", lwd=2,   add=TRUE)
+
+mean_sugarySnack_WoolworthsSale <- mean(sugarySnack_data$'Woolworths Sale')
+sd_sugarySnack_WoolworthsSale <- sd(sugarySnack_data$'Coles Sale')
+hist(sugarySnack_data$'Coles Sale', xlim = c(0,10), ylim = c(0, 0.5), col="grey", xlab="Price AUD (variable amount g or mL)", main="Histogram of Sugary Snacks at Coles (sale price)", freq = FALSE)
+curve(expr = dnorm(x, mean=mean_sugarySnack_colesSale, sd = sd_sugarySnack_colesSale), col="darkblue", lwd=2, add=TRUE)
+
+mean_Per1000gPrice_Coles <- mean(sugarySnack_data$Per1000gPrice_Coles)
+sd_Per1000gPrice_Coles <- sd(sugarySnack_data$Per1000gPrice_Coles)
+hist(sugarySnack_data$Per1000gPrice_Coles, xlim = c(-10,100), ylim = c(0, 0.04), col="grey", xlab="Price (per 1000 g or mL)", main="Histogram of Sugary Snacks at Coles (full price)", freq = FALSE)
+curve(expr = dnorm(x, mean=mean_Per1000gPrice_Coles, sd = sd_Per1000gPrice_Coles), col="darkblue", lwd=2, add=TRUE)
+
+mean_Per1000gPrice_ColesSale <- mean(sugarySnack_data$Per1000gPrice_ColesSale)
+sd_Per1000gPrice_ColesSale <- sd(sugarySnack_data$Per1000gPrice_ColesSale)
+hist(sugarySnack_data$Per1000gPrice_ColesSale, xlim = c(-10,100), ylim = c(0, 0.05), col="grey", xlab="Price (per 1000 g or mL)", main="Histogram of Sugary Snacks at Coles (full price)", freq = FALSE)
+curve(expr = dnorm(x, mean=mean_Per1000gPrice_Coles, sd = sd_Per1000gPrice_Coles), col="darkblue", lwd=2, add=TRUE)
+
+#Come back to summary stats table
+summary(sugarySnack_data$Coles)
+summary(sugarySnack_data$'Coles Sale') 
+
 ```
 
 ###Say we have 500g for $10, then 1000g would cost $20. To obtain a 1000g normalizing factor, we go (1000(g)/amount(g)), then multiply by price. As above, (1000g/500g)*$10 = $20 per kg 
 
 ```{r}
-#Bins makes no difference for this (default = bins)
+#Creating new data set for allocated category Diet/ Gym Food
+#Creating a filter
+dietGymFood_filter <- ds$`Allocated Category` == "Diet/ Gym Food"
+#Creating the data set
+dietGymFood_data <- ds[dietGymFood_filter,]
+#Check units
+table(dietGymFood_data$`Unit`)
+#In this instance we will take grams and mL to be equal (as at SLP, 1 mL has a mass of 1 g)
+sugarySnack_data$PriceMass <- 1000 / sugarySnack_data$Amount
+sugarySnack_data$Per1000gPrice_Coles <- sugarySnack_data$PriceMass * sugarySnack_data$Coles
+#Creating the Coles Sale sugary snack column
+sugarySnack_data$Per1000gPrice_ColesSale <- sugarySnack_data$PriceMass * sugarySnack_data$'Coles Sale'
+#Stats - Native
+
+mean_sugarySnack_coles <- mean(sugarySnack_data$Coles)
+sd_sugarySnack_coles <- sd(sugarySnack_data$Coles)
+hist(sugarySnack_data$Coles, xlim = c(0,20), ylim = c(0, 0.35), col="grey", xlab="Price AUD (variable amount g or mL)",main="Histogram of Sugary Snacks at Coles (full price)", breaks = 11, freq = FALSE)
+curve(expr = dnorm(x, mean=mean_sugarySnack_coles, sd = sd_sugarySnack_coles), col="darkblue", lwd=2,   add=TRUE)
+
+mean_sugarySnack_colesSale <- mean(sugarySnack_data$'Coles Sale')
+sd_sugarySnack_colesSale <- sd(sugarySnack_data$'Coles Sale')
+hist(sugarySnack_data$'Coles Sale', xlim = c(0,10), ylim = c(0, 0.5), col="grey", xlab="Price AUD (variable amount g or mL)", main="Histogram of Sugary Snacks at Coles (sale price)", freq = FALSE)
+curve(expr = dnorm(x, mean=mean_sugarySnack_colesSale, sd = sd_sugarySnack_colesSale), col="darkblue", lwd=2, add=TRUE)
+
 mean_Per1000gPrice_Coles <- mean(sugarySnack_data$Per1000gPrice_Coles)
 sd_Per1000gPrice_Coles <- sd(sugarySnack_data$Per1000gPrice_Coles)
 hist(sugarySnack_data$Per1000gPrice_Coles, xlim = c(-10,100), ylim = c(0, 0.04), col="grey", xlab="Price (per 1000 g or mL)", main="Histogram of Sugary Snacks at Coles (full price)", freq = FALSE)
 curve(expr = dnorm(x, mean=mean_Per1000gPrice_Coles, sd = sd_Per1000gPrice_Coles), col="darkblue", lwd=2, add=TRUE)
-```
 
-```{r}
-#Creating the Coles Sale sugary snack column
-sugarySnack_data$Per1000gPrice_ColesSale <- sugarySnack_data$PriceMass * sugarySnack_data$'Coles Sale'
-```
-
-```{r}
-############
-#Bins makes no difference for this (default = bins)
 mean_Per1000gPrice_ColesSale <- mean(sugarySnack_data$Per1000gPrice_ColesSale)
 sd_Per1000gPrice_ColesSale <- sd(sugarySnack_data$Per1000gPrice_ColesSale)
-hist(sugarySnack_data$Per1000gPrice_ColesSale, xlim = c(-10,100), ylim = c(0, 0.04), col="grey", xlab="Price (per 1000 g or mL)", main="Histogram of Sugary Snacks at Coles (full price)", freq = FALSE)
+hist(sugarySnack_data$Per1000gPrice_ColesSale, xlim = c(-10,100), ylim = c(0, 0.05), col="grey", xlab="Price (per 1000 g or mL)", main="Histogram of Sugary Snacks at Coles (full price)", freq = FALSE)
 curve(expr = dnorm(x, mean=mean_Per1000gPrice_Coles, sd = sd_Per1000gPrice_Coles), col="darkblue", lwd=2, add=TRUE)
+
+#Come back to summary stats table
+summary(sugarySnack_data$Coles)
+summary(sugarySnack_data$'Coles Sale') 
+```
+
+```{r}
+
+```
+
+```{r}
+
 ```
 
 
