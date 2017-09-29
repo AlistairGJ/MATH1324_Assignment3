@@ -171,7 +171,15 @@ curve(expr = dnorm(x, mean=mean_Per1000gPrice_Coles, sd = sd_Per1000gPrice_Coles
 
 #Come back to summary stats table
 summary(sugarySnack_data$Coles)
-summary(sugarySnack_data$'Coles Sale') 
+summary(sugarySnack_data$'Coles Sale')
+
+s <- ggplot(data=sugarySnack_data, aes(x=Coles))
+s + geom_histogram()
+
+s3 <- ggplot(data=ds, aes(x=Coles))
+s3 + geom_histogram()
+#Add colour
+s3 + geom_histogram(aes(fill=ds$`Allocated Category`), colour="White")
 
 ```
 
