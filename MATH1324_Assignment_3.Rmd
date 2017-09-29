@@ -177,11 +177,22 @@ s <- ggplot(data=sugarySnack_data, aes(x=Coles))
 s + geom_histogram()
 
 s3 <- ggplot(data=ds, aes(x=Coles))
-s3 + geom_histogram()
-#Add colour
-s3 + geom_histogram(aes(fill=ds$`Allocated Category`), colour="White")
+s3 + geom_histogram(aes(fill=ds$`Allocated Category`), colour="Black")
+
+colesSale <- ds[,'Coles Sale']
+s4 <- ggplot(data=ds, aes(colesSale)
+s4 + geom_histogram(aes(fill=ds$`Allocated Category`), colour="Black")
+
+{r pressure, echo=FALSE}
+
 
 ```
+
+```{r pressure, echo=FALSE}
+s3 <- ggplot(data=ds, aes(x=Coles))
+s3 + geom_histogram(aes(fill=ds$`Allocated Category`), colour="Black")
+```
+
 
 ###Say we have 500g for $10, then 1000g would cost $20. To obtain a 1000g normalizing factor, we go (1000(g)/amount(g)), then multiply by price. As above, (1000g/500g)*$10 = $20 per kg 
 
