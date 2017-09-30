@@ -43,7 +43,7 @@ ds <- gsheet2tbl('https://drive.google.com/open?id=1_6RZ0HXg7VbgO78oyFfUyZaFOUHY
 
 ## Summary Statistics
 
-### Data Checking
+### Data Checking and Initial Visualization
 The importation of the data set from Google Sheets as 'ds' was checked with summary, and the attribute names were also checked using sapply. During data collection, identical items available at both Coles and Woolworths were chosen. These items came from the following native categories on the Frugl website - BAKING, DAIRY & EGGS DIETARY, HEALTH & LIFESTYLE, DRINKS, FROZEN FOOD, HEALTH & BEAUTY, PACKAGED & READY MEALS and PANTRY, value counts can be seen below. During data collection, these items were re-categorized into the following categories - Beauty, Diet/ Gym Food, Sugary Snack and Supplement, value counts can also be seen below. For this investigation the allocated categories will be used, as they contain the same number of products but spread over fewer groupings. In many cases the allocated categories more accuratly group the products, for example in the code block "#Exploring the Allocated Categories" we see four items that easy can be categorized together as sugary snacks.
 ```{r}
 #Displaying summary statistics
@@ -68,7 +68,7 @@ df[c(281,286,291,300),c(2,3,4)]
 The attributes "Unit" and "Amount" refer to the unit of measurement the product comes in and the amount, respectively (see exploration code blocks below). Value counts were used to check the categorical attribute Unit. A scatter plot was used explore amount.
 ```{r}
 #Exploring Unit and Amount - Data Selection
-df[c(28,47,83,234,283,409),c(2,4,9,10)]
+df[c(9,47,17,234,283,409),c(2,4,9,10)]
 ```
 ```{r}
 #Value Counts for Unit
@@ -76,18 +76,61 @@ table(df$`Unit`)
 ```
 ```{r}
 #Exploring Unit and Amount - Dot Plot
-qplot(data=ds, x=Amount, y=ds$`Allocated Category`, colour = ds$`Allocated Category`, main = 'Dot Plot of Allocated Category vs Amount',  ylab = 'Allocated Category', xlab = 'Amount (g, mL, unit)') + theme(legend.title=element_blank())
+qplot(data=ds, x=Amount, y=ds$`Allocated Category`, colour = ds$`Allocated Category`, main = 'Dot Plot of Allocated Category vs Amount',  ylab = 'Allocated Category', xlab = 'Amount (g, mL, pack)') + theme(legend.title=element_blank())
 ```
 ```{r}
 #Exploring Unit and Amount - Stacked Histogram
-qplot(data=ds, x=Amount, fill = ds$`Allocated Category`, colour = I("Black"), main = 'Stacked Histogram of Allocated Category vs Amount', xlab = 'Amount (g, mL, unit)') + theme(legend.title=element_blank())
+qplot(data=ds, x=Amount, fill = ds$`Allocated Category`, colour = I("Black"), main = 'Stacked Histogram of Allocated Category vs Amount', xlab = 'Amount (g, mL, pack)') + theme(legend.title=element_blank())
+```
+The exploration up until this point has highlighted numerous challenges working with the data set. The products are distributed between three units, grams (g), milli litres (mL) & pack. Pack has a different meaning in the context of the products. For example (refer to the exploring unit and amount code block above) Tresemme Extra Hold Hair Spray (75g) has units g, with an amount of 75. John Frieda Medium Ash Blonde Hair Colour (1 pack) has the unit pack (not volume or mass) and a quantity of one. In the Supplement category Ostelin Vitamin D & Calcium Tablets (180 pack) has unit pack and quantity 180. The data will be explored further and standardised, as described below.
+
+## Exploring the Native Continuous Data with Scatter Plots
+Prior to any transformations, the data was also explored with scatterplots (see below).  
+```{r}
+qplot(data=ds, x=Coles, y=Woolworths, colour = ds$`Allocated Category`, main = 'Woolworths versus Coles Full Price Scatter Plot',  ylab = 'Woolworths Items (AUD)', xlab = 'Coles Items (AUD)') + theme(legend.title=element_blank())
+```
+```{r}
+qplot(data=ds, x=ds$`Coles Sale`, y=ds$`Woolworths Sale`, colour = ds$`Allocated Category`, main = 'Woolworths Sale versus Coles Sale Scatter Plot',  ylab = 'Woolworths Sale Items (AUD)', xlab = 'Coles Sale Items (AUD)') + theme(legend.title=element_blank())
+```
+```{r}
+qplot(data=ds, x=ds$`Woolworths Sale`, y=Woolworths, colour = ds$`Allocated Category`, main = 'Woolworths Sale Price versus Woolworths Full Price Scatter Plot',  ylab = 'Full Price Items (AUD)', xlab = 'Sale Items (AUD)') + theme(legend.title=element_blank())
+```
+```{r}
+qplot(data=ds, x=ds$`Coles Sale`, y=Coles, colour = ds$`Allocated Category`, main = 'Coles Sale Price versus Coles Full Price Scatter Plot',  ylab = 'Full Price Items (AUD)', xlab = 'Sale Items (AUD)') + theme(legend.title=element_blank())
 ```
 
-The exploration up until this point has highlighted numerous challenges working with the data set.
-
-The units accross the products are inconsistent.
 
 
+
+## Restructuring the Data
+Four new data sets were created, one for each of the 
+```{r}
+#Exploring Unit and Amount - Data Selection
+
+```
+
+## Filtering for Specific Rows (Allocated Category = Beauty, Sugary Snack, Diet / Gym Food, Supplment)
+Line 1 = Creating the filter
+Line 2 = Creating the dataset (for Coles, Coles Sale, Woolworths, Woolworths Sale)
+```{r}
+beauty_filter <- ds$`Allocated Category` == "Beauty"
+beauty_data <- ds[beauty_filter,]
+sugarySnack_filter <- ds$`Allocated Category` == "Sugary Snack"
+sugarySnack_data <- ds[sugarySnack_filter,]
+dietGymFood_filter <- ds$`Allocated Category` == "Diet/ Gym Food"
+dietGymFood_data <- ds[dietGymFood_filter,]
+supplement_filter <- ds$`Allocated Category` == "Supplement"
+supplement_data <- ds[supplement_filter,]
+```
+
+
+
+
+### Scatter Plot Visualization
+
+```{r}
+
+```
 
 
 
@@ -102,7 +145,6 @@ The units accross the products are inconsistent.
 
 
 ###We are now going to veiw native histograms for ALLOCATED CATEGORIES
-###Ignore meat & fish
 
 ### Initial Data Exploration
 
@@ -119,10 +161,6 @@ summary(ds)
 
 
 
-```{r}
-#Value Counts
-sapply(ds, typeof)
-```
 Walk through the data...
 
 Use R to summarise the data from the investigation. 
