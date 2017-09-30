@@ -179,11 +179,10 @@ s + geom_histogram()
 s3 <- ggplot(data=ds, aes(x=Coles))
 s3 + geom_histogram(aes(fill=ds$`Allocated Category`), colour="Black")
 
-colesSale <- ds[,'Coles Sale']
-s4 <- ggplot(data=ds, aes(colesSale)
+s4 <- ggplot(data=ds, aes(x=Woolworths))
 s4 + geom_histogram(aes(fill=ds$`Allocated Category`), colour="Black")
 
-{r pressure, echo=FALSE}
+
 
 
 ```
