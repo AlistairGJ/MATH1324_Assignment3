@@ -13,7 +13,8 @@ output: html_notebook
 In your own words, provide a brief summary of the investigation. Explain the aim of the investigation, the procedure, sample, variables, main findings and conclusions. Write this section last after you have performed hypothesis testing. (Word count Max: 300 words)
 
 #Introduction
-Coles (founded in blah, part of XY blah, ASX blah)(ref) and Woolworths (founded in blah, part of XY blah, ASX blah)(ref) are the two dominant supermarket chains in Australia(ref) OR summary table with name, number of stores, market cap, ASX... Both Coles and Woolworths market themselves largely on the grounds of affordability (Coles - prices are down, )
+
+Coles Supermarkets Australia Pty Ltd (trading as Coles) and Woolworths Supermarkets (colloquially known as "Woolies") were founded in Australia in 1914 and 1924, respectively ("Coles creates 115 jobs at its milestone 800th supermarket". www.wesfarmers.com.au. Retrieved 2017-07-02., Zappone, Chris (9 November 2009). "Supermarket duopoly blamed for soaring food prices". The Sydney Morning Herald. Retrieved 29 July 2013). Together, they make up more than 80% of the Australian market. Both Coles and Woolworths market themselves as extremely price competitive, whilst maintaining high quality products and a wide range (http://www.smh.com.au/business/retail/coles-deepens-price-war-after-slicing-bread-prices-20170712-gxa33p.html).
 
 Hypothesis A:
 While both claiming to be "low cost" blah blah, invariably, one supermarket chain will have lower prices.
