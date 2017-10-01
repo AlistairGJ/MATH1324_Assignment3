@@ -99,6 +99,18 @@ wwVcoles +
   annotate("text", x = 15, y = 1, label = format(summary(lm(Woolworths ~ Coles, data = ds))$r.squared, digits = 3))
 ```
 
+```{r}
+wwSaleVcolesSale <- ggplot(data=ds, aes(x=ds$'Coles Sale', y=ds$'Woolworths Sale', colour = ds$`Allocated Category`))
+wwSaleVcolesSale + 
+  stat_smooth(method = "lm", col = "black", size = 0.5) +
+  geom_point() + 
+  labs(title = 'Woolworths Sale versus Coles Sale Price Scatter Plot',  
+       y = 'Woolworths Sale Items (AUD)', 
+       x = 'Coles Sale Items (AUD)') +
+  theme(legend.title = element_blank()) +
+  annotate("text", x = 15, y = 4, label = "R Squared") + 
+  annotate("text", x = 15, y = 1, label = format(summary(lm(ds$'Woolworths Sale' ~ ds$'Coles Sale', data = ds))$r.squared, digits = 3))
+```
 
 
 
