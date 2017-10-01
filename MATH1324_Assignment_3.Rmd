@@ -87,10 +87,22 @@ The exploration up until this point has highlighted numerous challenges working 
 ## Exploring the Native Continuous Data with Scatter Plots
 Prior to any transformations, the data was also explored with scatterplots (see below).  
 ```{r}
-qplot(data=ds, x=Coles, y=Woolworths, colour = ds$`Allocated Category`, main = 'Woolworths versus Coles Full Price Scatter Plot',  ylab = 'Woolworths Items (AUD)', xlab = 'Coles Items (AUD)') + theme(legend.title=element_blank())
+wwVcoles <- ggplot(data=ds, aes(x=Coles, y=Woolworths, colour = ds$`Allocated Category`))
+m <- lm(Woolworths ~ Coles, ds)
+r2 <- format(summary(m)$r.squared, digits = 3)
+wwVcoles + 
+  geom_point() + 
+  labs(title = 'Woolworths versus Coles Full Price Scatter Plot',  
+       y = 'Woolworths Items (AUD)', 
+       x = 'Coles Items (AUD)') +
+  theme(legend.title = element_blank()) +
+  annotate("text", x = 8, y = 27, label = "R Squared") + 
+  annotate("text", x = 8, y = 24, label = r2)
 ```
 ```{r}
 qplot(data=ds, x=ds$`Coles Sale`, y=ds$`Woolworths Sale`, colour = ds$`Allocated Category`, main = 'Woolworths Sale versus Coles Sale Scatter Plot',  ylab = 'Woolworths Sale Items (AUD)', xlab = 'Coles Sale Items (AUD)') + theme(legend.title=element_blank())
+
+
 ```
 ```{r}
 qplot(data=ds, x=ds$`Woolworths Sale`, y=Woolworths, colour = ds$`Allocated Category`, main = 'Woolworths Sale Price versus Woolworths Full Price Scatter Plot',  ylab = 'Full Price Items (AUD)', xlab = 'Sale Items (AUD)') + theme(legend.title=element_blank())
