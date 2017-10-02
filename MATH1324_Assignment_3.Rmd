@@ -14,7 +14,7 @@ In your own words, provide a brief summary of the investigation. Explain the aim
 
 ### Introduction & Hypothesis
 
-Coles Supermarkets Australia Pty Ltd (trading as Coles) and Woolworths Supermarkets (colloquially known as "Woolies") were founded in Australia in 1914 and 1924, respectively (1,2). Together, they make up more than 80% of the Australian market. Both Coles and Woolworths market themselves as extremely price competitive, whilst maintaining high quality products and a wide range (3). Over the course of this investigation, we will attempt to determine price differences between Coles and Woolworths by evaluating two hypothesis.
+Coles Supermarkets Australia Pty Ltd (trading as Coles) and Woolworths Supermarkets (colloquially known as "Woolworths" or "Woolies") were founded in Australia in 1914 and 1924, respectively (1,2). Together, they make up more than 80% of the Australian market. Both Coles and Woolworths market themselves as extremely price competitive, whilst maintaining high quality products and a wide range (3). Over the course of this investigation, we will attempt to determine price differences between Coles and Woolworths by evaluating two hypothesis.
 
 ### Hypothesis A
 While Coles and Woolworths both claim to be "low cost", invariably, one supermarket chain will have lower prices.
@@ -23,9 +23,9 @@ While Coles and Woolworths both claim to be "low cost", invariably, one supermar
 In an attempt to differentiate themselves from each other as 'low price' (while still maintaining high quality & a wide range), the two major Australian supermarket chains, Coles and Woolworths, will employ different pricing stratergies to show consumers they have the 'lowest prices'.
 
 ### Data Collection NOTE THE WAY FULL PRICE AND SALE WAS COLLECTED.
-The price comparison website www.frugl.com.au was used for data collection. Data was collected over three days (7 Sep, 17 Sep & 18 Sep 2017) within the postcode 3054 (Carlton North, Victoria, Australia). Date was noted as sale items will change with time (and thus collection was performed within an 11 day window). Postcode was kept constant as different regions will presumably have specials and full priced products based on geographies (for example shops in QLD may sell mangos at much cheaper prices than in Victoria). Such assumption could be evaluated, however are outside the scope of this investigation.
+The price comparison website www.frugl.com.au was used for data collection. Data was collected over three days (7 Sep, 17 Sep & 18 Sep 2017) within the postcode 3054 (Carlton North, Victoria, Australia). Date was noted as sale items will change with time (and thus collection was performed within an 11 day window). Postcode was kept constant as different regions will presumably have specials and full priced products based on geographies (for example shops in Queensland may sell mangos at much cheaper prices than in Victoria). Such assumption could be evaluated, however are outside the scope of this investigation.
 
-Frugl allows filtering of products into a selection of distinct native categories, for example HEALTH & BEAUTY or BAKING. Categories were chosen based on the likelyhood of containing identical products. For example Nivea Moisturiser 200g is manufactured and thus identical, whereas Coles may stock 'Fresh Celery 250g' while Woolworths may stock 'Farm Fresh Celery 225g'. These subtle differences make comparison harder, and so products like the latter were ignored. The native categories and their respective item counts will be explored below. 
+Frugl allows filtering of products into a selection of distinct native categories, for example HEALTH & BEAUTY or BAKING. Categories were chosen based on the likelyhood of containing identical products. For example 'Nivea Moisturiser 200g' is manufactured and thus identical, whereas Coles may stock 'Fresh Celery 250g' while Woolworths may stock 'Farm Fresh Celery 225g'. These subtle differences make comparison harder, and so products like the latter were ignored. The native categories and their respective item counts will be explored below. For each item four prices were recorded; i. Coles Full Price, ii. Coles Sale Price, iii. Woolworths Full Price & iv. Woolworths Sale Price. If the item was not on sale, the full price was recorded into the sale column. This was done to for ease of data processing, as delta = 0 between the full price and sale column will indicate the item is not presently on sale. 
 
 Data was collated into a Google Sheet, which was pulled directly into the R Markdown environment. See below for data structure and importation methology.
 
@@ -34,7 +34,6 @@ Data was collated into a Google Sheet, which was pulled directly into the R Mark
 library(ggplot2)
 library(dplyr)
 library(gsheet)
-library(vembedr)
 library(gridExtra)
 library("htmltools")
 ds <- gsheet2tbl('https://drive.google.com/open?id=1_6RZ0HXg7VbgO78oyFfUyZaFOUHYWijy8XH1_jw5tA4')
@@ -111,6 +110,28 @@ wwSaleVcolesSale +
   annotate("text", x = 15, y = 4, label = "R Squared") + 
   annotate("text", x = 15, y = 1, label = format(summary(lm(ds$'Woolworths Sale' ~ ds$'Coles Sale', data = ds))$r.squared, digits = 3))
 ```
+
+```{r}
+colesVcolesSale <- ggplot(data=ds, aes(x=ds$`Coles Sale`, y=Coles, colour = ds$`Allocated Category`))
+colesVcolesSale + 
+  stat_smooth(method = "lm", col = "black", size = 0.5) +
+  geom_point() + 
+  labs(title = 'Coles Sale Price versus Coles Full Price Scatter Plot',  
+       y = 'Woolworths Sale Items (AUD)', 
+       x = 'Coles Sale Items (AUD)') +
+  theme(legend.title = element_blank()) +
+  annotate("text", x = 15, y = 4, label = "R Squared") + 
+  annotate("text", x = 15, y = 1, label = format(summary(lm(ds$'Woolworths Sale' ~ ds$'Coles Sale', data = ds))$r.squared, digits = 3))
+```
+
+
+
+
+
+
+
+
+
 
 
 
