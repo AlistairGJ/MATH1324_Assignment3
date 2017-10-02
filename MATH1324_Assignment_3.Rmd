@@ -91,8 +91,8 @@ wwVcoles +
   stat_smooth(method = "lm", col = "black", size = 0.5) +
   geom_point() + 
   labs(title = 'Woolworths versus Coles Full Price Scatter Plot',  
-       y = 'Woolworths Items (AUD)', 
-       x = 'Coles Items (AUD)') +
+       y = 'Woolworths Full Price Items (AUD)', 
+       x = 'Coles Full Price Items (AUD)') +
   theme(legend.title = element_blank()) +
   annotate("text", x = 15, y = 4, label = "R Squared") + 
   annotate("text", x = 15, y = 1, label = format(summary(lm(Woolworths ~ Coles, data = ds))$r.squared, digits = 3))
@@ -117,32 +117,26 @@ colesVcolesSale +
   stat_smooth(method = "lm", col = "black", size = 0.5) +
   geom_point() + 
   labs(title = 'Coles Sale Price versus Coles Full Price Scatter Plot',  
-       y = 'Woolworths Sale Items (AUD)', 
+       y = 'Coles Full Price Items (AUD)', 
        x = 'Coles Sale Items (AUD)') +
   theme(legend.title = element_blank()) +
   annotate("text", x = 15, y = 4, label = "R Squared") + 
-  annotate("text", x = 15, y = 1, label = format(summary(lm(ds$'Woolworths Sale' ~ ds$'Coles Sale', data = ds))$r.squared, digits = 3))
+  annotate("text", x = 15, y = 1, label = format(summary(lm(Coles ~ ds$'Coles Sale', data = ds))$r.squared, digits = 3))
 ```
-
-
-
-
-
-
-
-
-
-
-
 
 ```{r}
-qplot(data=ds, x=ds$`Coles Sale`, y=ds$`Woolworths Sale`, colour = ds$`Allocated Category`, main = 'Woolworths Sale versus Coles Sale Scatter Plot',  ylab = 'Woolworths Sale Items (AUD)', xlab = 'Coles Sale Items (AUD)') + theme(legend.title=element_blank())
-
-
+wwVwwSale <- ggplot(data=ds, aes(x=ds$`Woolworths Sale`, y=Woolworths, colour = ds$`Allocated Category`))
+wwVwwSale + 
+  stat_smooth(method = "lm", col = "black", size = 0.5) +
+  geom_point() + 
+  labs(title = 'Woolworths Sale Price versus Woolworth Full Price Scatter Plot',  
+       y = 'Woolworths Full Price Items (AUD)', 
+       x = 'Woolworths Sale Items (AUD)') +
+  theme(legend.title = element_blank()) +
+  annotate("text", x = 15, y = 4, label = "R Squared") + 
+  annotate("text", x = 15, y = 1, label = format(summary(lm(Woolworths ~ ds$`Woolworths Sale`, data = ds))$r.squared, digits = 3))
 ```
-```{r}
-qplot(data=ds, x=ds$`Woolworths Sale`, y=Woolworths, colour = ds$`Allocated Category`, main = 'Woolworths Sale Price versus Woolworths Full Price Scatter Plot',  ylab = 'Full Price Items (AUD)', xlab = 'Sale Items (AUD)') + theme(legend.title=element_blank())
-```
+
 ```{r}
 qplot(data=ds, x=ds$`Coles Sale`, y=Coles, colour = ds$`Allocated Category`, main = 'Coles Sale Price versus Coles Full Price Scatter Plot',  ylab = 'Full Price Items (AUD)', xlab = 'Sale Items (AUD)') + theme(legend.title=element_blank())
 ```
