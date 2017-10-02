@@ -167,7 +167,7 @@ sugarySnack_data$Per1000gPrice_WW %>% qqPlot(dist="norm")
 
 ```{r}
 colesSaleQplot <- ggplot(data=ds, aes(sample = Coles, colour = ds$`Allocated Category`)) + stat_qq()
-colesSaleQplot
+colesSaleQplot 
 
 
 wwSaleHist <- ggplot(data=ds, aes(x=ds$'Allocated Category', y=ds$`Woolworths Sale`, fill = ds$`Allocated Category`)) + geom_boxplot() + theme(legend.title=element_blank()) + labs(title = NULL, x = "WW Sale", y = NULL) + coord_flip()
@@ -191,6 +191,14 @@ int   <- y[1] - slope * x[1]           # Compute the line intercept
 
 ggplot() + aes(sample=alto) + stat_qq(distribution=qnorm) + 
            geom_abline(intercept=int, slope=slope) + ylab("Height") 
+
+
+http://stattrek.com/hypothesis-test/difference-in-means.aspx
+https://statistics.laerd.com/statistical-guides/hypothesis-testing-3.php
+http://www.sthda.com/english/wiki/ggplot2-qq-plot-quantile-quantile-graph-quick-start-guide-r-software-and-data-visualization#customized-qq-plots
+http://homepage.divms.uiowa.edu/~luke/classes/STAT4580/qqpp.html
+http://ggplot2.tidyverse.org/reference/
+https://www.statsdirect.com/help/basics/p_values.htm
 
 
 ```
