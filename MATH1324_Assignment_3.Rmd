@@ -12,15 +12,11 @@ output: html_notebook
 
 In your own words, provide a brief summary of the investigation. Explain the aim of the investigation, the procedure, sample, variables, main findings and conclusions. Write this section last after you have performed hypothesis testing. (Word count Max: 300 words)
 
-### Introduction & Hypothesis
+## Hypothesis
+As both Coles and Woolworths heavily market themselves to be "low cost", over a sample of identical goods, they will have the same mean cost.
 
-Coles Supermarkets Australia Pty Ltd (trading as Coles) and Woolworths Supermarkets (colloquially known as "Woolworths" or "Woolies") were founded in Australia in 1914 and 1924, respectively (1,2). Together, they make up more than 80% of the Australian market. Both Coles and Woolworths market themselves as extremely price competitive, whilst maintaining high quality products and a wide range (3). Over the course of this investigation, we will attempt to determine price differences between Coles and Woolworths by evaluating two hypothesis.
-
-### Hypothesis A
-While Coles and Woolworths both claim to be "low cost", invariably, one supermarket chain will have lower prices.
-
-### Hypothesis B
-In an attempt to differentiate themselves from each other as 'low price' (while still maintaining high quality & a wide range), the two major Australian supermarket chains, Coles and Woolworths, will employ different pricing stratergies to show consumers they have the 'lowest prices'.
+### Introduction
+Coles Supermarkets Australia Pty Ltd (trading as Coles) and Woolworths Supermarkets (colloquially known as "Woolworths" or "Woolies") were founded in Australia in 1914 and 1924, respectively (1,2). Together, they make up more than 80% of the Australian market. Both Coles and Woolworths market themselves as extremely price competitive, whilst maintaining high quality products and a wide range (3). Over the course of this investigation, we will attempt to prove or disprove our null hypothesis (as outlined above).
 
 ### Data Collection NOTE THE WAY FULL PRICE AND SALE WAS COLLECTED.
 The price comparison website www.frugl.com.au was used for data collection. Data was collected over three days (7 Sep, 17 Sep & 18 Sep 2017) within the postcode 3054 (Carlton North, Victoria, Australia). Date was noted as sale items will change with time (and thus collection was performed within an 11 day window). Postcode was kept constant as different regions will presumably have specials and full priced products based on geographies (for example shops in Queensland may sell mangos at much cheaper prices than in Victoria). Such assumption could be evaluated, however are outside the scope of this investigation.
@@ -31,11 +27,13 @@ Data was collated into a Google Sheet, which was pulled directly into the R Mark
 
 ## Load Packages and Data
 ```{r}
+library(car)
 library(ggplot2)
 library(dplyr)
 library(gsheet)
 library(gridExtra)
 library("htmltools")
+library(reshape2)
 ds <- gsheet2tbl('https://drive.google.com/open?id=1_6RZ0HXg7VbgO78oyFfUyZaFOUHYWijy8XH1_jw5tA4')
 ###Note - "Overall Coles in cheaper, in category x coles in cheaper... and so on"
 ```
@@ -43,7 +41,7 @@ ds <- gsheet2tbl('https://drive.google.com/open?id=1_6RZ0HXg7VbgO78oyFfUyZaFOUHY
 ## Summary Statistics
 
 ### Data Checking and Initial Visualization
-The importation of the data set from Google Sheets as 'ds' was checked with summary, and the attribute names were also checked using sapply. During data collection, identical items available at both Coles and Woolworths were chosen. These items came from the following native categories on the Frugl website - BAKING, DAIRY & EGGS DIETARY, HEALTH & LIFESTYLE, DRINKS, FROZEN FOOD, HEALTH & BEAUTY, PACKAGED & READY MEALS and PANTRY, value counts can be seen below. During data collection, these items were re-categorized into the following categories - Beauty, Diet/ Gym Food, Sugary Snack and Supplement, value counts can also be seen below. For this investigation the allocated categories will be used, as they contain the same number of products but spread over fewer groupings. In many cases the allocated categories more accuratly group the products, for example in the code block "#Exploring the Allocated Categories" we see four items that easy can be categorized together as sugary snacks.
+The importation of the data set from Google Sheets as 'ds' was checked with summary, and the attribute names were also checked using sapply. During data collection, identical items available at both Coles and Woolworths were chosen. These items came from the following native categories on the Frugl website - BAKING, DAIRY & EGGS DIETARY, HEALTH & LIFESTYLE, DRINKS, FROZEN FOOD, HEALTH & BEAUTY, PACKAGED & READY MEALS and PANTRY, value counts can be seen below. During data collection, these items were re-categorized into the following categories - Beauty, Diet/ Gym Food, Sugary Snack and Supplement, value counts can also be seen below. For this investigation the allocated categories will be used, as they contain the same number of products but spread over fewer groupings. In many cases the allocated categories more accuratly group the products. For example in the code block "#Exploring the Allocated Categories" we see four items that can be accurately categorized together as sugary snacks.
 ```{r}
 #Displaying summary statistics
 summary(ds)
@@ -62,16 +60,16 @@ table(ds$`Allocated Category`)
 ```
 ```{r}
 #Exploring the Allocated Categories
-df[c(281,286,291,300),c(2,3,4)]
+ds[c(281,286,291,300),c(2,3,4)]
 ```
 The attributes "Unit" and "Amount" refer to the unit of measurement the product comes in and the amount, respectively (see exploration code blocks below). Value counts were used to check the categorical attribute Unit. A scatter plot was used explore amount.
 ```{r}
 #Exploring Unit and Amount - Data Selection
-df[c(9,47,17,234,283,409),c(2,4,9,10)]
+ds[c(9,47,17,234,283,409),c(2,4,9,10)]
 ```
 ```{r}
 #Value Counts for Unit
-table(df$`Unit`)
+table(ds$`Unit`)
 ```
 ```{r}
 #Exploring Unit and Amount - Dot Plot
@@ -83,11 +81,10 @@ qplot(data=ds, x=Amount, fill = ds$`Allocated Category`, colour = I("Black"), ma
 ```
 The exploration up until this point has highlighted numerous challenges working with the data set. The products are distributed between three units, grams (g), milli litres (mL) & pack. Pack has a different meaning in the context of the products. For example (refer to the exploring unit and amount code block above) Tresemme Extra Hold Hair Spray (75g) has units g, with an amount of 75. John Frieda Medium Ash Blonde Hair Colour (1 pack) has the unit pack (not volume or mass) and a quantity of one. In the Supplement category Ostelin Vitamin D & Calcium Tablets (180 pack) has unit pack and quantity 180. The data will be explored further and standardised, as described below.
 
-## Exploring the Native Continuous Data with Scatter Plots
+### Exploring the Native Continuous Data with Scatter Plots
 Prior to any transformations, the data was also explored with scatterplots (see below).  
 ```{r}
-wwVcoles <- ggplot(data=ds, aes(x=Coles, y=Woolworths, colour = ds$`Allocated Category`))
-wwVcoles + 
+wwVcoles <- ggplot(data=ds, aes(x=Coles, y=Woolworths, colour = ds$`Allocated Category`)) +
   stat_smooth(method = "lm", col = "black", size = 0.5) +
   geom_point() + 
   labs(title = 'Woolworths versus Coles Full Price Scatter Plot',  
@@ -96,11 +93,11 @@ wwVcoles +
   theme(legend.title = element_blank()) +
   annotate("text", x = 15, y = 4, label = "R Squared") + 
   annotate("text", x = 15, y = 1, label = format(summary(lm(Woolworths ~ Coles, data = ds))$r.squared, digits = 3))
+wwVcoles
 ```
 
 ```{r}
-wwSaleVcolesSale <- ggplot(data=ds, aes(x=ds$'Coles Sale', y=ds$'Woolworths Sale', colour = ds$`Allocated Category`))
-wwSaleVcolesSale + 
+wwSaleVcolesSale <- ggplot(data=ds, aes(x=ds$'Coles Sale', y=ds$'Woolworths Sale', colour = ds$`Allocated Category`)) +
   stat_smooth(method = "lm", col = "black", size = 0.5) +
   geom_point() + 
   labs(title = 'Woolworths Sale versus Coles Sale Price Scatter Plot',  
@@ -109,104 +106,25 @@ wwSaleVcolesSale +
   theme(legend.title = element_blank()) +
   annotate("text", x = 15, y = 4, label = "R Squared") + 
   annotate("text", x = 15, y = 1, label = format(summary(lm(ds$'Woolworths Sale' ~ ds$'Coles Sale', data = ds))$r.squared, digits = 3))
+wwSaleVcolesSale
+```
+
+
+###
+
+```{r}
+colesHist <- ggplot(data=ds, aes(x=ds$'Allocated Category', y=Coles, fill = ds$`Allocated Category`)) + geom_boxplot() + theme(legend.title=element_blank()) + labs(title = NULL,  x = "Coles", y = NULL) + coord_flip()
+colesSaleHist <- ggplot(data=ds, aes(x=ds$'Allocated Category', y=ds$`Coles Sale`, fill = ds$`Allocated Category`)) + geom_boxplot() + theme(legend.title=element_blank()) + labs(title = NULL,  x = "Coles Sale", y = NULL) + coord_flip()
+wwHist <- ggplot(data=ds, aes(x=ds$'Allocated Category', y=Woolworths, fill = ds$`Allocated Category`)) + geom_boxplot() + theme(legend.title=element_blank()) + labs(title = NULL,  x = "WW", y = NULL) + coord_flip()
+wwSaleHist <- ggplot(data=ds, aes(x=ds$'Allocated Category', y=ds$`Woolworths Sale`, fill = ds$`Allocated Category`)) + geom_boxplot() + theme(legend.title=element_blank()) + labs(title = NULL, x = "WW Sale", y = NULL) + coord_flip()
 ```
 
 ```{r}
-colesVcolesSale <- ggplot(data=ds, aes(x=ds$`Coles Sale`, y=Coles, colour = ds$`Allocated Category`))
-colesVcolesSale + 
-  stat_smooth(method = "lm", col = "black", size = 0.5) +
-  geom_point() + 
-  labs(title = 'Coles Sale Price versus Coles Full Price Scatter Plot',  
-       y = 'Coles Full Price Items (AUD)', 
-       x = 'Coles Sale Items (AUD)') +
-  theme(legend.title = element_blank()) +
-  annotate("text", x = 15, y = 4, label = "R Squared") + 
-  annotate("text", x = 15, y = 1, label = format(summary(lm(Coles ~ ds$'Coles Sale', data = ds))$r.squared, digits = 3))
+grid.arrange(colesHist, colesSaleHist, wwHist, wwSaleHist, nrow = 4)
 ```
-
-```{r}
-wwVwwSale <- ggplot(data=ds, aes(x=ds$`Woolworths Sale`, y=Woolworths, colour = ds$`Allocated Category`))
-wwVwwSale + 
-  stat_smooth(method = "lm", col = "black", size = 0.5) +
-  geom_point() + 
-  labs(title = 'Woolworths Sale Price versus Woolworth Full Price Scatter Plot',  
-       y = 'Woolworths Full Price Items (AUD)', 
-       x = 'Woolworths Sale Items (AUD)') +
-  theme(legend.title = element_blank()) +
-  annotate("text", x = 15, y = 4, label = "R Squared") + 
-  annotate("text", x = 15, y = 1, label = format(summary(lm(Woolworths ~ ds$`Woolworths Sale`, data = ds))$r.squared, digits = 3))
-```
-
-```{r}
-qplot(data=ds, x=ds$`Coles Sale`, y=Coles, colour = ds$`Allocated Category`, main = 'Coles Sale Price versus Coles Full Price Scatter Plot',  ylab = 'Full Price Items (AUD)', xlab = 'Sale Items (AUD)') + theme(legend.title=element_blank())
-```
-
-
-
 
 ## Restructuring the Data
-Four new data sets were created, one for each of the 
-```{r}
-#Exploring Unit and Amount - Data Selection
-library(car)
-sugarySnack_data$`Woolworths Sale` %>% qqPlot(dist="norm")
-```
 
-```{r}
-sugarySnack_data$Per1000gPrice_WWSale %>% qqPlot(dist="norm")
-```
-
-```{r}
-sugarySnack_data$Woolworths %>% qqPlot(dist="norm")
-```
-
-```{r}
-sugarySnack_data$Per1000gPrice_WW %>% qqPlot(dist="norm")
-```
-
-
-```{r}
-colesSaleQplot <- ggplot(data=ds, aes(sample = Coles, colour = ds$`Allocated Category`)) + stat_qq()
-colesSaleQplot 
-
-
-wwSaleHist <- ggplot(data=ds, aes(x=ds$'Allocated Category', y=ds$`Woolworths Sale`, fill = ds$`Allocated Category`)) + geom_boxplot() + theme(legend.title=element_blank()) + labs(title = NULL, x = "WW Sale", y = NULL) + coord_flip()
-
-
-sugarySnack_data$Per1000gPrice_WW %>% qqPlot(dist="norm")
-
-
-
-library(ggplot2)
-
-# Find the slope and intercept of the line that passes through the 1st and 3rd
-# quartile of the normal q-q plot
-
-y     <- quantile(alto, c(0.25, 0.75)) # Find the 1st and 3rd quartiles
-x     <- qnorm( c(0.25, 0.75))         # Find the matching normal values on the x-axis
-slope <- diff(y) / diff(x)             # Compute the line slope
-int   <- y[1] - slope * x[1]           # Compute the line intercept
-
-# Generate normal q-q plot
-
-ggplot() + aes(sample=alto) + stat_qq(distribution=qnorm) + 
-           geom_abline(intercept=int, slope=slope) + ylab("Height") 
-
-
-http://stattrek.com/hypothesis-test/difference-in-means.aspx
-https://statistics.laerd.com/statistical-guides/hypothesis-testing-3.php
-http://www.sthda.com/english/wiki/ggplot2-qq-plot-quantile-quantile-graph-quick-start-guide-r-software-and-data-visualization#customized-qq-plots
-http://homepage.divms.uiowa.edu/~luke/classes/STAT4580/qqpp.html
-http://ggplot2.tidyverse.org/reference/
-https://www.statsdirect.com/help/basics/p_values.htm
-
-
-```
-
-
-```{r}
-sugarySnack_data$Per1000gPrice_WW %>% qqPlot(dist="norm")
-```
 ## Filtering for Specific Rows (Allocated Category = Beauty, Sugary Snack, Diet / Gym Food, Supplment)
 Line 1 = Creating the filter
 Line 2 = Creating the dataset (for Coles, Coles Sale, Woolworths, Woolworths Sale)
@@ -221,178 +139,107 @@ supplement_filter <- ds$`Allocated Category` == "Supplement"
 supplement_data <- ds[supplement_filter,]
 ```
 
-
-
-
-### Scatter Plot Visualization
-
+### Checking the resultant units
 ```{r}
-
-```
-
-
-
-
-
-
-
-
-
-#Categories = analytics are more finely grained
-#Standardize units = analytics are more finely grained
-
-
-###We are now going to veiw native histograms for ALLOCATED CATEGORIES
-
-### Initial Data Exploration
-
-
-
-
-```{r}
-#Coles (full price), for sugary snack
-mean_coles_sugarySnack <- mean(ds$coles, select(ds$`Allocated Category` = 'Sugary Snack'))
-ds$Coles == 'Sugary Snack'
-
-summary(ds)
-```
-
-
-
-Walk through the data...
-
-Use R to summarise the data from the investigation. 
-
-Include an appropriate plot to help visualise the data. Describe the trend. 
-
-```{r}
-# This is a chunk for your summary statistics and visualisation code
-ds$Coles
-```
-
-```{r}
-#Creating new data set for allocated category sugary snack data
-#Creating a filter
-sugarySnack_filter <- ds$`Allocated Category` == "Sugary Snack"
-#Creating the data set
-sugarySnack_data <- ds[sugarySnack_filter,]
-#In this instance we will take grams and mL to be equal (as at SLP, 1 mL has a mass of 1 g)
-
-#Check units
+#Value Counts for Unit
 table(sugarySnack_data$`Unit`)
+```
+```{r}
+#Value Counts for Unit
+table(dietGymFood_data$`Unit`)
+```
 
+```{r}
+#Price per 1000g for Sugary 
 sugarySnack_data$PriceMass <- 1000 / sugarySnack_data$Amount
 sugarySnack_data$Per1000gPrice_Coles <- sugarySnack_data$PriceMass * sugarySnack_data$Coles
 sugarySnack_data$Per1000gPrice_WW <- sugarySnack_data$PriceMass * sugarySnack_data$Woolworths
 sugarySnack_data$Per1000gPrice_ColesSale <- sugarySnack_data$PriceMass * sugarySnack_data$'Coles Sale'
 sugarySnack_data$Per1000gPrice_WWSale <- sugarySnack_data$PriceMass * sugarySnack_data$'Woolworths Sale'
-#Stats - Native
-
-mean_sugarySnack_coles <- mean(sugarySnack_data$Coles)
-sd_sugarySnack_coles <- sd(sugarySnack_data$Coles)
-hist(sugarySnack_data$Coles, xlim = c(0,20), ylim = c(0, 0.35), col="grey", xlab="Price AUD (variable amount g or mL)",main="Histogram of Sugary Snacks at Coles (full price)", breaks = 11, freq = FALSE)
-curve(expr = dnorm(x, mean=mean_sugarySnack_coles, sd = sd_sugarySnack_coles), col="darkblue", lwd=2,   add=TRUE)
-
-mean_sugarySnack_colesSale <- mean(sugarySnack_data$'Coles Sale')
-sd_sugarySnack_colesSale <- sd(sugarySnack_data$'Coles Sale')
-hist(sugarySnack_data$'Coles Sale', xlim = c(0,10), ylim = c(0, 0.5), col="grey", xlab="Price AUD (variable amount g or mL)", main="Histogram of Sugary Snacks at Coles (sale price)", freq = FALSE)
-curve(expr = dnorm(x, mean=mean_sugarySnack_colesSale, sd = sd_sugarySnack_colesSale), col="darkblue", lwd=2, add=TRUE)
-
-mean_Per1000gPrice_Coles <- mean(sugarySnack_data$Per1000gPrice_Coles)
-sd_Per1000gPrice_Coles <- sd(sugarySnack_data$Per1000gPrice_Coles)
-hist(sugarySnack_data$Per1000gPrice_Coles, xlim = c(-10,100), ylim = c(0, 0.04), col="grey", xlab="Price (per 1000 g or mL)", main="Histogram of Sugary Snacks at Coles (full price)", freq = FALSE)
-curve(expr = dnorm(x, mean=mean_Per1000gPrice_Coles, sd = sd_Per1000gPrice_Coles), col="darkblue", lwd=2, add=TRUE)
-
-mean_Per1000gPrice_ColesSale <- mean(sugarySnack_data$Per1000gPrice_ColesSale)
-sd_Per1000gPrice_ColesSale <- sd(sugarySnack_data$Per1000gPrice_ColesSale)
-hist(sugarySnack_data$Per1000gPrice_ColesSale, xlim = c(-10,100), ylim = c(0, 0.05), col="grey", xlab="Price (per 1000 g or mL)", main="Histogram of Sugary Snacks at Coles (sale price)", freq = FALSE)
-curve(expr = dnorm(x, mean=mean_Per1000gPrice_ColesSale, sd = sd_Per1000gPrice_ColesSale), col="darkblue", lwd=2, add=TRUE)
-
-mean_sugarySnack_Woolworths <- mean(sugarySnack_data$Woolworths)
-sd_sugarySnack_Woolworths <- sd(sugarySnack_data$Woolworths)
-hist(sugarySnack_data$Woolworths, xlim = c(0,20), ylim = c(0, 0.35), col="grey", xlab="Price AUD (variable amount g or mL)",main="Histogram of Sugary Snacks at WW (full price)", breaks = 11, freq = FALSE)
-curve(expr = dnorm(x, mean=mean_sugarySnack_Woolworths, sd = sd_sugarySnack_Woolworths), col="darkblue", lwd=2,   add=TRUE)
-
-mean_sugarySnack_WoolworthsSale <- mean(sugarySnack_data$'Woolworths Sale')
-sd_sugarySnack_WoolworthsSale <- sd(sugarySnack_data$'Coles Sale')
-hist(sugarySnack_data$'Coles Sale', xlim = c(0,10), ylim = c(0, 0.5), col="grey", xlab="Price AUD (variable amount g or mL)", main="Histogram of Sugary Snacks at Coles (sale price)", freq = FALSE)
-curve(expr = dnorm(x, mean=mean_sugarySnack_colesSale, sd = sd_sugarySnack_colesSale), col="darkblue", lwd=2, add=TRUE)
-
-mean_Per1000gPrice_Coles <- mean(sugarySnack_data$Per1000gPrice_Coles)
-sd_Per1000gPrice_Coles <- sd(sugarySnack_data$Per1000gPrice_Coles)
-hist(sugarySnack_data$Per1000gPrice_Coles, xlim = c(-10,100), ylim = c(0, 0.04), col="grey", xlab="Price (per 1000 g or mL)", main="Histogram of Sugary Snacks at Coles (full price)", freq = FALSE)
-curve(expr = dnorm(x, mean=mean_Per1000gPrice_Coles, sd = sd_Per1000gPrice_Coles), col="darkblue", lwd=2, add=TRUE)
-
-mean_Per1000gPrice_ColesSale <- mean(sugarySnack_data$Per1000gPrice_ColesSale)
-sd_Per1000gPrice_ColesSale <- sd(sugarySnack_data$Per1000gPrice_ColesSale)
-hist(sugarySnack_data$Per1000gPrice_ColesSale, xlim = c(-10,100), ylim = c(0, 0.05), col="grey", xlab="Price (per 1000 g or mL)", main="Histogram of Sugary Snacks at Coles (full price)", freq = FALSE)
-curve(expr = dnorm(x, mean=mean_Per1000gPrice_Coles, sd = sd_Per1000gPrice_Coles), col="darkblue", lwd=2, add=TRUE)
-
-#Come back to summary stats table
-summary(sugarySnack_data$Coles)
-summary(sugarySnack_data$'Coles Sale')
-
-s <- ggplot(data=sugarySnack_data, aes(x=Coles))
-s + geom_histogram()
-
-s3 <- ggplot(data=ds, aes(x=Coles))
-s3 + geom_histogram(aes(fill=ds$`Allocated Category`), colour="Black")
-
-s4 <- ggplot(data=ds, aes(x=Woolworths))
-s4 + geom_histogram(aes(fill=ds$`Allocated Category`), colour="Black")
-
-
-
-
 ```
 
-```{r pressure, echo=FALSE}
-s3 <- ggplot(data=ds, aes(x=Coles))
-s3 + geom_histogram(aes(fill=ds$`Allocated Category`), colour="Black")
+```{r}
+#Price per 1000g for Sugary 
+dietGymFood_data$PriceMass <- 1000 / dietGymFood_data$Amount
+dietGymFood_data$Per1000gPrice_Coles <- dietGymFood_data$PriceMass * dietGymFood_data$Coles
+dietGymFood_data$Per1000gPrice_WW <- dietGymFood_data$PriceMass * dietGymFood_data$Woolworths
+dietGymFood_data$Per1000gPrice_ColesSale <- dietGymFood_data$PriceMass * dietGymFood_data$'Coles Sale'
+dietGymFood_data$Per1000gPrice_WWSale <- dietGymFood_data$PriceMass * dietGymFood_data$'Woolworths Sale'
 ```
 
+### For the sake of expediency, quantile-quantile plots were used to assess the results of normalization to price per 1000 g or 1000 ml for Sugary Snacks and Diet / Gym Food.
+
+```{r}
+#Exploring Unit and Amount - Data Selection
+summary(dietGymFood_data)
+```
+
+```{r}
+write.csv(dietGymFood_data, file = "DietGymFood.csv")
+write.csv(sugarySnack_data, file = "SugarySnack.csv")
+dsAdjusted <- gsheet2tbl('https://docs.google.com/spreadsheets/d/1VQh07x0OQaaADhflcZ5YY17bB0Ho9kUsPycBsRFYsIk/edit?usp=sharing')
+```
+
+```{r}
+colesHistAdjusted <- ggplot(data=dsAdjusted, aes(x=dsAdjusted$'Allocated Category', y=ColesAdjusted, fill = dsAdjusted$`Allocated Category`)) + geom_boxplot() + theme(legend.title=element_blank()) + labs(title = NULL,  x = "Coles Adj", y = NULL) + coord_flip()
+
+colesSaleHistAdjusted <- ggplot(data=dsAdjusted, aes(x=dsAdjusted$'Allocated Category', y=ColesSaleAdjusted, fill = dsAdjusted$`Allocated Category`)) + geom_boxplot() + theme(legend.title=element_blank()) + labs(title = NULL,  x = "Coles Sale Adj", y = NULL) + coord_flip()
+
+wwHistAdjusted <- ggplot(data=dsAdjusted, aes(x=dsAdjusted$'Allocated Category', y=WoolworthsAdjusted, fill = dsAdjusted$`Allocated Category`)) + geom_boxplot() + theme(legend.title=element_blank()) + labs(title = NULL,  x = "WW Adj", y = NULL) + coord_flip()
+
+wwSaleHistAdjusted <- ggplot(data=dsAdjusted, aes(x=dsAdjusted$'Allocated Category', y=WoolworthsSaleAdjusted, fill = dsAdjusted$`Allocated Category`)) + geom_boxplot() + theme(legend.title=element_blank()) + labs(title = NULL, x = "WW Sale Adj", y = NULL) + coord_flip()
+```
+
+```{r}
+grid.arrange(colesHistAdjusted, colesSaleHistAdjusted, wwHistAdjusted, wwSaleHistAdjusted, nrow = 4)
+```
+
+```{r}
+sugarySnack_filterAdjusted <- dsAdjusted$`Allocated Category` == "Sugary Snack"
+sugarySnack_dataAdjusted <- dsAdjusted[sugarySnack_filterAdjusted,]
+dietGymFood_filterAdjusted <- dsAdjusted$`Allocated Category` == "Diet/ Gym Food"
+dietGymFood_dataAdjusted <- dsAdjusted[dietGymFood_filter,]
+```
+
+```{r}
+colesNativeQplot <- ggplot(data=ds, aes(sample = Coles, colour = ds$`Allocated Category`)) + theme(legend.title=element_blank()) + stat_qq()
+colesNativeQplot + labs(title = "Coles Native Data QQ Plot")
+```
+```{r}
+colesAdjustedQplot <- ggplot(data=dsAdjusted, aes(sample = ColesAdjusted, colour = ds$`Allocated Category`)) + theme(legend.title=element_blank()) + stat_qq()
+colesAdjustedQplot + labs(title = "Coles Adjusted Data QQ Plot")
+```
+
+```{r}
+colesSaleNativeQplot <- ggplot(data=ds, aes(sample = ds$`Coles Sale`, colour = ds$`Allocated Category`)) + theme(legend.title=element_blank()) + stat_qq()
+colesSaleNativeQplot + labs(title = "Coles Sale Native Data QQ Plot")
+```
+
+```{r}
+colesSaleAdjustedQplot <- ggplot(data=dsAdjusted, aes(sample = ColesSaleAdjusted, colour = ds$`Allocated Category`)) + theme(legend.title=element_blank()) + stat_qq()
+colesSaleAdjustedQplot + labs(title = "Coles Sale Adjusted Data QQ Plot")
+```
+
+ADD Woolworths QQPlots
+
+```{r}
+grid.arrange(colesHistAdjusted, colesSaleHistAdjusted, wwHistAdjusted, wwSaleHistAdjusted, nrow = 4)
+```
+
+
+## Restructuring the Data
+Four new data sets were created, one for each of the 
+μ1 - μ2 < d
+
+http://stattrek.com/hypothesis-test/difference-in-means.aspx
+https://statistics.laerd.com/statistical-guides/hypothesis-testing-3.php
+http://www.sthda.com/english/wiki/ggplot2-qq-plot-quantile-quantile-graph-quick-start-guide-r-software-and-data-visualization#customized-qq-plots
+http://homepage.divms.uiowa.edu/~luke/classes/STAT4580/qqpp.html
+http://ggplot2.tidyverse.org/reference/
+https://www.statsdirect.com/help/basics/p_values.htm
 
 ###Say we have 500g for $10, then 1000g would cost $20. To obtain a 1000g normalizing factor, we go (1000(g)/amount(g)), then multiply by price. As above, (1000g/500g)*$10 = $20 per kg 
 
-```{r}
-#Creating new data set for allocated category Diet/ Gym Food
-#Creating a filter
-dietGymFood_filter <- ds$`Allocated Category` == "Diet/ Gym Food"
-#Creating the data set
-dietGymFood_data <- ds[dietGymFood_filter,]
-#Check units
-table(dietGymFood_data$`Unit`)
-#In this instance we will take grams and mL to be equal (as at SLP, 1 mL has a mass of 1 g)
-sugarySnack_data$PriceMass <- 1000 / sugarySnack_data$Amount
-sugarySnack_data$Per1000gPrice_Coles <- sugarySnack_data$PriceMass * sugarySnack_data$Coles
-#Creating the Coles Sale sugary snack column
-sugarySnack_data$Per1000gPrice_ColesSale <- sugarySnack_data$PriceMass * sugarySnack_data$'Coles Sale'
-#Stats - Native
-
-mean_sugarySnack_coles <- mean(sugarySnack_data$Coles)
-sd_sugarySnack_coles <- sd(sugarySnack_data$Coles)
-hist(sugarySnack_data$Coles, xlim = c(0,20), ylim = c(0, 0.35), col="grey", xlab="Price AUD (variable amount g or mL)",main="Histogram of Sugary Snacks at Coles (full price)", breaks = 11, freq = FALSE)
-curve(expr = dnorm(x, mean=mean_sugarySnack_coles, sd = sd_sugarySnack_coles), col="darkblue", lwd=2,   add=TRUE)
-
-mean_sugarySnack_colesSale <- mean(sugarySnack_data$'Coles Sale')
-sd_sugarySnack_colesSale <- sd(sugarySnack_data$'Coles Sale')
-hist(sugarySnack_data$'Coles Sale', xlim = c(0,10), ylim = c(0, 0.5), col="grey", xlab="Price AUD (variable amount g or mL)", main="Histogram of Sugary Snacks at Coles (sale price)", freq = FALSE)
-curve(expr = dnorm(x, mean=mean_sugarySnack_colesSale, sd = sd_sugarySnack_colesSale), col="darkblue", lwd=2, add=TRUE)
-
-mean_Per1000gPrice_Coles <- mean(sugarySnack_data$Per1000gPrice_Coles)
-sd_Per1000gPrice_Coles <- sd(sugarySnack_data$Per1000gPrice_Coles)
-hist(sugarySnack_data$Per1000gPrice_Coles, xlim = c(-10,100), ylim = c(0, 0.04), col="grey", xlab="Price (per 1000 g or mL)", main="Histogram of Sugary Snacks at Coles (full price)", freq = FALSE)
-curve(expr = dnorm(x, mean=mean_Per1000gPrice_Coles, sd = sd_Per1000gPrice_Coles), col="darkblue", lwd=2, add=TRUE)
-
-mean_Per1000gPrice_ColesSale <- mean(sugarySnack_data$Per1000gPrice_ColesSale)
-sd_Per1000gPrice_ColesSale <- sd(sugarySnack_data$Per1000gPrice_ColesSale)
-hist(sugarySnack_data$Per1000gPrice_ColesSale, xlim = c(-10,100), ylim = c(0, 0.05), col="grey", xlab="Price (per 1000 g or mL)", main="Histogram of Sugary Snacks at Coles (full price)", freq = FALSE)
-curve(expr = dnorm(x, mean=mean_Per1000gPrice_Coles, sd = sd_Per1000gPrice_Coles), col="darkblue", lwd=2, add=TRUE)
-
-#Come back to summary stats table
-summary(sugarySnack_data$Coles)
-summary(sugarySnack_data$'Coles Sale') 
-```
 
 ```{r}
 
@@ -404,6 +251,23 @@ summary(sugarySnack_data$'Coles Sale')
 
 
 ## Hypothesis Test
+We will conduct multiple two-sample t-tests (difference between two means) to evaluate our null hypothesis. This is appropriate as the samples were generated by simple random sampling, the samples are independent, 
+
+The sampling method for each sample is simple random sampling.
+The samples are independent.
+Each population is at least 20 times larger than its respective sample.
+The sampling distribution is approximately normal, which is generally the case if any of the following conditions apply.
+
+The population distribution is normal.
+The population data are symmetric, unimodal, without outliers, and the sample size is 15 or less.
+The population data are slightly skewed, unimodal, without outliers, and the sample size is 16 to 40.
+The sample size is greater than 40, without outliers.
+This approach consists of four steps: (1) state the hypotheses, (2) formulate an analysis plan, (3) analyze sample data, and (4) interpret results.
+
+
+
+#### TEST
+
 
 Use R to perform an appropriate hypothesis test to determine which supermarket is the cheapest. You need to explain your choice of hypothesis test, any assumptions and the significance level. 
 
@@ -422,3 +286,8 @@ Discuss the findings of your investigation. What did you conclude? What were the
 1: http://www.wesfarmers.com.au/util/news-media/article/2017/06/22/coles-creates-115-jobs-at-its-milestone-800th-supermarket
 2: http://www.smh.com.au/business/supermarket-duopoly-blamed-for-soaring-food-prices-20091108-i3tn.html
 3: http://www.smh.com.au/business/retail/coles-deepens-price-war-after-slicing-bread-prices-20170712-gxa33p.html
+
+
+
+
+
