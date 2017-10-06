@@ -113,10 +113,10 @@ wwSaleVcolesSale
 ###
 
 ```{r}
-colesHist <- ggplot(data=ds, aes(x=ds$'Allocated Category', y=Coles, fill = ds$`Allocated Category`)) + geom_boxplot() + theme(legend.title=element_blank()) + labs(title = NULL,  x = "Coles", y = NULL) + coord_flip()
-colesSaleHist <- ggplot(data=ds, aes(x=ds$'Allocated Category', y=ds$`Coles Sale`, fill = ds$`Allocated Category`)) + geom_boxplot() + theme(legend.title=element_blank()) + labs(title = NULL,  x = "Coles Sale", y = NULL) + coord_flip()
-wwHist <- ggplot(data=ds, aes(x=ds$'Allocated Category', y=Woolworths, fill = ds$`Allocated Category`)) + geom_boxplot() + theme(legend.title=element_blank()) + labs(title = NULL,  x = "WW", y = NULL) + coord_flip()
-wwSaleHist <- ggplot(data=ds, aes(x=ds$'Allocated Category', y=ds$`Woolworths Sale`, fill = ds$`Allocated Category`)) + geom_boxplot() + theme(legend.title=element_blank()) + labs(title = NULL, x = "WW Sale", y = NULL) + coord_flip()
+colesHist <- ggplot(data=ds, aes(x=ds$'Allocated Category', y=Coles, fill = ds$`Allocated Category`)) + geom_boxplot() + theme(legend.title=element_blank()) + labs(title = NULL,  x = "Coles", y = NULL) + guides(fill = FALSE) + coord_flip() + scale_y_continuous(limits = c(0,55), expand = c(0, 0))
+colesSaleHist <- ggplot(data=ds, aes(x=ds$'Allocated Category', y=ds$`Coles Sale`, fill = ds$`Allocated Category`)) + geom_boxplot() + theme(legend.title=element_blank()) + labs(title = NULL,  x = "Coles Sale", y = NULL) + guides(fill = FALSE) + coord_flip() + scale_y_continuous(limits = c(0,55), expand = c(0, 0))
+wwHist <- ggplot(data=ds, aes(x=ds$'Allocated Category', y=Woolworths, fill = ds$`Allocated Category`)) + geom_boxplot() + theme(legend.title=element_blank()) + labs(title = NULL,  x = "WW", y = NULL) + guides(fill = FALSE) + coord_flip() + scale_y_continuous(limits = c(0,55), expand = c(0, 0))
+wwSaleHist <- ggplot(data=ds, aes(x=ds$'Allocated Category', y=ds$`Woolworths Sale`, fill = ds$`Allocated Category`)) + geom_boxplot() + theme(legend.title=element_blank()) + labs(title = NULL, x = "WW Sale", y = NULL) + guides(fill = FALSE) + coord_flip() + scale_y_continuous(limits = c(0,55), expand = c(0, 0))
 ```
 
 ```{r}
@@ -181,13 +181,10 @@ dsAdjusted <- gsheet2tbl('https://docs.google.com/spreadsheets/d/1VQh07x0OQaaADh
 ```
 
 ```{r}
-colesHistAdjusted <- ggplot(data=dsAdjusted, aes(x=dsAdjusted$'Allocated Category', y=ColesAdjusted, fill = dsAdjusted$`Allocated Category`)) + geom_boxplot() + theme(legend.title=element_blank()) + labs(title = NULL,  x = "Coles Adj", y = NULL) + coord_flip()
-
-colesSaleHistAdjusted <- ggplot(data=dsAdjusted, aes(x=dsAdjusted$'Allocated Category', y=ColesSaleAdjusted, fill = dsAdjusted$`Allocated Category`)) + geom_boxplot() + theme(legend.title=element_blank()) + labs(title = NULL,  x = "Coles Sale Adj", y = NULL) + coord_flip()
-
-wwHistAdjusted <- ggplot(data=dsAdjusted, aes(x=dsAdjusted$'Allocated Category', y=WoolworthsAdjusted, fill = dsAdjusted$`Allocated Category`)) + geom_boxplot() + theme(legend.title=element_blank()) + labs(title = NULL,  x = "WW Adj", y = NULL) + coord_flip()
-
-wwSaleHistAdjusted <- ggplot(data=dsAdjusted, aes(x=dsAdjusted$'Allocated Category', y=WoolworthsSaleAdjusted, fill = dsAdjusted$`Allocated Category`)) + geom_boxplot() + theme(legend.title=element_blank()) + labs(title = NULL, x = "WW Sale Adj", y = NULL) + coord_flip()
+colesHistAdjusted <- ggplot(data=dsAdjusted, aes(x=dsAdjusted$'Allocated Category', y=ColesAdjusted, fill = dsAdjusted$`Allocated Category`)) + geom_boxplot() + theme(legend.title=element_blank()) + labs(title = NULL,  x = "Coles Adj.", y = NULL) + guides(fill = FALSE) + coord_flip() + scale_y_continuous(limits = c(0,410), expand = c(0, 0))
+colesSaleHistAdjusted <- ggplot(data=dsAdjusted, aes(x=dsAdjusted$'Allocated Category', y=ColesSaleAdjusted, fill = dsAdjusted$`Allocated Category`)) + geom_boxplot() + theme(legend.title=element_blank()) + labs(title = NULL,  x = "Coles Sale Adj.", y = NULL) + guides(fill = FALSE) + coord_flip() + scale_y_continuous(limits = c(0,410), expand = c(0, 0))
+wwHistAdjusted <- ggplot(data=dsAdjusted, aes(x=dsAdjusted$'Allocated Category', y=WoolworthsAdjusted, fill = dsAdjusted$`Allocated Category`)) + geom_boxplot() + theme(legend.title=element_blank()) + labs(title = NULL,  x = "WW Adj.", y = NULL) + guides(fill = FALSE) + coord_flip() + scale_y_continuous(limits = c(0,410), expand = c(0, 0))
+wwSaleHistAdjusted <- ggplot(data=dsAdjusted, aes(x=dsAdjusted$'Allocated Category', y=WoolworthsSaleAdjusted, fill = dsAdjusted$`Allocated Category`)) + geom_boxplot() + theme(legend.title=element_blank()) + labs(title = NULL, x = "WW Sale Adj.", y = NULL) + guides(fill = FALSE) + coord_flip() + scale_y_continuous(limits = c(0,410), expand = c(0, 0))
 ```
 
 ```{r}
@@ -201,10 +198,69 @@ dietGymFood_filterAdjusted <- dsAdjusted$`Allocated Category` == "Diet/ Gym Food
 dietGymFood_dataAdjusted <- dsAdjusted[dietGymFood_filter,]
 ```
 
+### Outlier Identification
+
+```{r}
+summary(sugarySnack_dataAdjusted$ColesAdjusted)
+```
+```{r}
+dsAdjusted[dsAdjusted$ColesAdjusted == 83.33,]
+```
+```{r}
+sugarySnack_dataAdjusted[sugarySnack_dataAdjusted$WoolworthsSaleAdjusted > 50,]
+```
+```{r}
+sugarySnack_dataAdjusted[sugarySnack_dataAdjusted$WoolworthsSaleAdjusted == 56.00,]
+```
+
+All Diet / Gym Contain 2 outliers, will just use Coles Adjusted to find (with > 120)
+
+```{r}
+dsAdjusted[dsAdjusted$ColesAdjusted > 110,]
+```
+
+```{r}
+supplement_filterAdjusted <- dsAdjusted$`Allocated Category` == "Supplement"
+supplement_dataAdjusted <- dsAdjusted[supplement_filterAdjusted,]
+```
+
+```{r}
+summary(supplement_dataAdjusted$WoolworthsAdjusted)
+```
+
+```{r}
+dsAdjusted <- gsheet2tbl('https://docs.google.com/spreadsheets/d/1C01FHE6Y0gnkEd-gOvbV57Cmd8BXYs0ch1pGDa9aKKs/edit?usp=sharing')
+```
+
+```{r}
+colesHistAdjusted <- ggplot(data=dsAdjusted, aes(x=dsAdjusted$'Allocated Category', y=ColesAdjusted, fill = dsAdjusted$`Allocated Category`)) + geom_boxplot() + theme(legend.title=element_blank()) + labs(title = NULL,  x = "Coles Adj.", y = NULL) + guides(fill = FALSE) + coord_flip() + scale_y_continuous(limits = c(0,410), expand = c(0, 0))
+colesSaleHistAdjusted <- ggplot(data=dsAdjusted, aes(x=dsAdjusted$'Allocated Category', y=ColesSaleAdjusted, fill = dsAdjusted$`Allocated Category`)) + geom_boxplot() + theme(legend.title=element_blank()) + labs(title = NULL,  x = "Coles Sale Adj.", y = NULL) + guides(fill = FALSE) + coord_flip() + scale_y_continuous(limits = c(0,410), expand = c(0, 0))
+wwHistAdjusted <- ggplot(data=dsAdjusted, aes(x=dsAdjusted$'Allocated Category', y=WoolworthsAdjusted, fill = dsAdjusted$`Allocated Category`)) + geom_boxplot() + theme(legend.title=element_blank()) + labs(title = NULL,  x = "WW Adj.", y = NULL) + guides(fill = FALSE) + coord_flip() + scale_y_continuous(limits = c(0,410), expand = c(0, 0))
+wwSaleHistAdjusted <- ggplot(data=dsAdjusted, aes(x=dsAdjusted$'Allocated Category', y=WoolworthsSaleAdjusted, fill = dsAdjusted$`Allocated Category`)) + geom_boxplot() + theme(legend.title=element_blank()) + labs(title = NULL, x = "WW Sale Adj.", y = NULL) + guides(fill = FALSE) + coord_flip() + scale_y_continuous(limits = c(0,410), expand = c(0, 0))
+```
+
+```{r}
+grid.arrange(colesHistAdjusted, colesSaleHistAdjusted, wwHistAdjusted, wwSaleHistAdjusted, nrow = 4)
+```
+
+```{r}
+colesHistAdjusted <- ggplot(data=dsAdjusted, aes(x=dsAdjusted$'Allocated Category', y=ColesAdjusted, fill = dsAdjusted$`Allocated Category`)) + geom_boxplot() + theme(legend.title=element_blank()) + labs(title = NULL,  x = "Coles Adj.", y = NULL) + guides(fill = FALSE) + coord_flip() + scale_y_continuous(limits = c(0,130), expand = c(0, 0))
+colesSaleHistAdjusted <- ggplot(data=dsAdjusted, aes(x=dsAdjusted$'Allocated Category', y=ColesSaleAdjusted, fill = dsAdjusted$`Allocated Category`)) + geom_boxplot() + theme(legend.title=element_blank()) + labs(title = NULL,  x = "Coles Sale Adj.", y = NULL) + guides(fill = FALSE) + coord_flip() + scale_y_continuous(limits = c(0,130), expand = c(0, 0))
+wwHistAdjusted <- ggplot(data=dsAdjusted, aes(x=dsAdjusted$'Allocated Category', y=WoolworthsAdjusted, fill = dsAdjusted$`Allocated Category`)) + geom_boxplot() + theme(legend.title=element_blank()) + labs(title = NULL,  x = "WW Adj.", y = NULL) + guides(fill = FALSE) + coord_flip() + scale_y_continuous(limits = c(0,130), expand = c(0, 0))
+wwSaleHistAdjusted <- ggplot(data=dsAdjusted, aes(x=dsAdjusted$'Allocated Category', y=WoolworthsSaleAdjusted, fill = dsAdjusted$`Allocated Category`)) + geom_boxplot() + theme(legend.title=element_blank()) + labs(title = NULL, x = "WW Sale Adj.", y = NULL) + guides(fill = FALSE) + coord_flip() + scale_y_continuous(limits = c(0,130), expand = c(0, 0))
+```
+
+```{r}
+grid.arrange(colesHistAdjusted, colesSaleHistAdjusted, wwHistAdjusted, wwSaleHistAdjusted, nrow = 4)
+```
+
+
 ```{r}
 colesNativeQplot <- ggplot(data=ds, aes(sample = Coles, colour = ds$`Allocated Category`)) + theme(legend.title=element_blank()) + stat_qq()
 colesNativeQplot + labs(title = "Coles Native Data QQ Plot")
 ```
+
+
 ```{r}
 colesAdjustedQplot <- ggplot(data=dsAdjusted, aes(sample = ColesAdjusted, colour = ds$`Allocated Category`)) + theme(legend.title=element_blank()) + stat_qq()
 colesAdjustedQplot + labs(title = "Coles Adjusted Data QQ Plot")
@@ -240,15 +296,39 @@ https://www.statsdirect.com/help/basics/p_values.htm
 
 ###Say we have 500g for $10, then 1000g would cost $20. To obtain a 1000g normalizing factor, we go (1000(g)/amount(g)), then multiply by price. As above, (1000g/500g)*$10 = $20 per kg 
 
+https://statistics.berkeley.edu/computing/r-t-tests 
 
 ```{r}
+> x = rnorm(10)
+> y = rnorm(10)
+> t.test(x,y)
 
+        Welch Two Sample t-test
+
+data:  x and y
+t = 1.4896, df = 15.481, p-value = 0.1564
+alternative hypothesis: true difference in means is not equal to 0
+95 percent confidence interval:
+ -0.3221869  1.8310421
+sample estimates:
+ mean of x  mean of y
+ 0.1944866 -0.5599410
 ```
 
 ```{r}
-
+#Is normalization required?
+x = rnorm(dsAdjusted$ColesAdjusted)
+y = rnorm(dsAdjusted$ColesSaleAdjusted)
+t.test(dsAdjusted$ColesAdjusted,dsAdjusted$ColesSaleAdjusted)
 ```
 
+
+```{r}
+#Is normalization required?
+x = rnorm(dsAdjusted$ColesAdjusted)
+y = rnorm(dsAdjusted$ColesSaleAdjusted)
+t.test(dsAdjusted$ColesAdjusted,dsAdjusted$ColesSaleAdjusted, var.equal=TRUE)
+```
 
 ## Hypothesis Test
 We will conduct multiple two-sample t-tests (difference between two means) to evaluate our null hypothesis. This is appropriate as the samples were generated by simple random sampling, the samples are independent, 
