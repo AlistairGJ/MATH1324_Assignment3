@@ -342,7 +342,7 @@ sample estimates:
 #Is normalization required?
 x = rnorm(dsAdjusted$ColesAdjusted)
 y = rnorm(dsAdjusted$ColesSaleAdjusted)
-t.test(dsAdjusted$ColesAdjusted,dsAdjusted$ColesSaleAdjusted)
+t.test(dsAdjusted$ColesAdjusted,dsAdjusted$ColesSaleAdjusted, paired = TRUE)
 ```
 
 
@@ -391,6 +391,10 @@ Discuss the findings of your investigation. What did you conclude? What were the
 3: http://www.smh.com.au/business/retail/coles-deepens-price-war-after-slicing-bread-prices-20170712-gxa33p.html
 
 
+http://ggplot2.tidyverse.org/reference/theme.html
+http://ggplot2.tidyverse.org/reference/aes_colour_fill_alpha.html
+https://stackoverflow.com/questions/35108443/ggplot2-make-legend-key-fill-transparent
+https://stackoverflow.com/questions/16251966/controlling-the-alpha-level-in-a-ggplot2-legend
 
 
 
