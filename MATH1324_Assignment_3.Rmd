@@ -1,7 +1,9 @@
 ---
 title: "MATH1324 Assignment 3"
-subtitle: "Supermarket Price Wars"
-output: html_notebook
+subtitle: Supermarket Price Wars
+output:
+  html_notebook: default
+  pdf_document: default
 ---
 
 ## Group/Individual Details
@@ -108,7 +110,6 @@ wwSaleVcolesSale <- ggplot(data=ds, aes(x=ds$'Coles Sale', y=ds$'Woolworths Sale
   annotate("text", x = 15, y = 1, label = format(summary(lm(ds$'Woolworths Sale' ~ ds$'Coles Sale', data = ds))$r.squared, digits = 3))
 wwSaleVcolesSale
 ```
-
 
 ###
 
@@ -256,31 +257,53 @@ grid.arrange(colesHistAdjusted, colesSaleHistAdjusted, wwHistAdjusted, wwSaleHis
 
 
 ```{r}
-colesNativeQplot <- ggplot(data=ds, aes(sample = Coles, colour = ds$`Allocated Category`)) + theme(legend.title=element_blank()) + stat_qq()
-colesNativeQplot + labs(title = "Coles Native Data QQ Plot")
-```
-
-
-```{r}
-colesAdjustedQplot <- ggplot(data=dsAdjusted, aes(sample = ColesAdjusted, colour = ds$`Allocated Category`)) + theme(legend.title=element_blank()) + stat_qq()
-colesAdjustedQplot + labs(title = "Coles Adjusted Data QQ Plot")
-```
-
-```{r}
-colesSaleNativeQplot <- ggplot(data=ds, aes(sample = ds$`Coles Sale`, colour = ds$`Allocated Category`)) + theme(legend.title=element_blank()) + stat_qq()
-colesSaleNativeQplot + labs(title = "Coles Sale Native Data QQ Plot")
+colesNativeQQplot_FullPrice <- ggplot(data=ds, aes(sample = Coles, colour = ds$`Allocated Category`)) +
+theme(legend.title=element_blank(), 
+     legend.background = element_rect(fill="transparent"),
+     legend.position = c(.22, .95), 
+     legend.justification = c("right", "top")) + 
+  stat_qq() + labs(title = "Coles Native Full Price Data QQ Plot")
+colesNativeQQplot_FullPrice
 ```
 
 ```{r}
-colesSaleAdjustedQplot <- ggplot(data=dsAdjusted, aes(sample = ColesSaleAdjusted, colour = ds$`Allocated Category`)) + theme(legend.title=element_blank()) + stat_qq()
-colesSaleAdjustedQplot + labs(title = "Coles Sale Adjusted Data QQ Plot")
+colesAdjustedQQplot_FullPrice <- ggplot(data=dsAdjusted, aes(sample = ColesAdjusted, colour = dsAdjusted$`Allocated Category`)) + theme(legend.title=element_blank(), 
+     legend.background = element_rect(fill="transparent"),
+     legend.position = c(.22, .95), 
+     legend.justification = c("right", "top")) + 
+  stat_qq() + labs(title = "Coles Adjusted Full Price Data QQ Plot")
+colesAdjustedQQplot_FullPrice
 ```
+
+```{r}
+grid.arrange(colesNativeQQplot_FullPrice, colesAdjustedQQplot_FullPrice, nrow = 2)
+```
+
+```{r}
+colesNativeQQplot_SalePrice <- ggplot(data=ds, aes(sample = ds$`Coles Sale`, colour = ds$`Allocated Category`)) +
+theme(legend.title=element_blank(), 
+     legend.background = element_rect(fill="transparent"),
+     legend.position = c(.22, .95), 
+     legend.justification = c("right", "top")) + 
+  stat_qq() + labs(title = "Coles Native Sale Price Data QQ Plot")
+colesNativeQQplot_SalePrice
+```
+
+```{r}
+colesAdjustedQQplot_SalePrice <- ggplot(data=dsAdjusted, aes(sample = ColesAdjusted, colour = dsAdjusted$`Allocated Category`)) + theme(legend.title=element_blank(), 
+     legend.background = element_rect(fill="transparent"),
+     legend.position = c(.22, .95), 
+     legend.justification = c("right", "top")) + 
+  stat_qq() + labs(title = "Coles Adjusted Sale Price Data QQ Plot")
+colesAdjustedQQplot_SalePrice
+```
+
+```{r}
+grid.arrange(colesNativeQQplot_SalePrice, colesAdjustedQQplot_SalePrice, nrow = 2)
+```
+
 
 ADD Woolworths QQPlots
-
-```{r}
-grid.arrange(colesHistAdjusted, colesSaleHistAdjusted, wwHistAdjusted, wwSaleHistAdjusted, nrow = 4)
-```
 
 
 ## Restructuring the Data
