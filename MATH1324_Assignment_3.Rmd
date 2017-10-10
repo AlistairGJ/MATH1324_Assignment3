@@ -5,30 +5,40 @@ output:
   html_notebook: default
   pdf_document: default
 ---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
 
-## Group/Individual Details
+### Group/Individual Details
 
 * Alistair Grevis-James (s3644119)
 
-## Executive Statement
+### Executive Statement
 
 In your own words, provide a brief summary of the investigation. Explain the aim of the investigation, the procedure, sample, variables, main findings and conclusions. Write this section last after you have performed hypothesis testing. (Word count Max: 300 words)
 
-## Hypothesis
-As both Coles and Woolworths heavily market themselves to be "low cost", over a sample of identical goods, they will have the same mean cost.
+### Hypothesis
+As both Coles and Woolworths heavily market themselves to be "low cost", over a sample of identical goods (identical being defined as manufactured goods that are stocked at both Coles and Woolworths), they will have the same mean cost.  
 
-### Introduction
-Coles Supermarkets Australia Pty Ltd (trading as Coles) and Woolworths Supermarkets (colloquially known as "Woolworths" or "Woolies") were founded in Australia in 1914 and 1924, respectively (1,2). Together, they make up more than 80% of the Australian market. Both Coles and Woolworths market themselves as extremely price competitive, whilst maintaining high quality products and a wide range (3). Over the course of this investigation, we will attempt to prove or disprove our null hypothesis (as outlined above).
+The statistical hypotheses for the paired-samples t-test are as follows:  
 
-### Data Collection NOTE THE WAY FULL PRICE AND SALE WAS COLLECTED.
-The price comparison website www.frugl.com.au was used for data collection. Data was collected over three days (7 Sep, 17 Sep & 18 Sep 2017) within the postcode 3054 (Carlton North, Victoria, Australia). Date was noted as sale items will change with time (and thus collection was performed within an 11 day window). Postcode was kept constant as different regions will presumably have specials and full priced products based on geographies (for example shops in Queensland may sell mangos at much cheaper prices than in Victoria). Such assumption could be evaluated, however are outside the scope of this investigation.
+* H0:μΔ=0
+* HA:μΔ≠0
 
-Frugl allows filtering of products into a selection of distinct native categories, for example HEALTH & BEAUTY or BAKING. Categories were chosen based on the likelyhood of containing identical products. For example 'Nivea Moisturiser 200g' is manufactured and thus identical, whereas Coles may stock 'Fresh Celery 250g' while Woolworths may stock 'Farm Fresh Celery 225g'. These subtle differences make comparison harder, and so products like the latter were ignored. The native categories and their respective item counts will be explored below. For each item four prices were recorded; i. Coles Full Price, ii. Coles Sale Price, iii. Woolworths Full Price & iv. Woolworths Sale Price. If the item was not on sale, the full price was recorded into the sale column. This was done to for ease of data processing, as delta = 0 between the full price and sale column will indicate the item is not presently on sale. 
+#### Introduction
+Coles Supermarkets Australia Pty Ltd (trading as Coles) and Woolworths Supermarkets (colloquially known as "Woolworths" or "Woolies") were founded in Australia in 1914 and 1924, respectively [^1],[^2]. Together, they make up more than 80% of the Australian market. Both Coles and Woolworths market themselves as extremely price competitive, whilst maintaining high quality products and a wide range [^3]. Over the course of this investigation, we will attempt to prove or disprove our null hypothesis (as outlined above).
+
+##### Data Collection
+The price comparison website www.frugl.com.au[^4] was used for data collection. Data was collected over three days (7 Sep, 17 Sep & 18 Sep 2017) within the postcode 3054 (Carlton North, Victoria, Australia). Date was noted as sale items will change with time (and thus collection was performed within an 11 day window). Postcode was kept constant as different regions will presumably have specials and full priced products based on geographies (for example shops in Queensland may sell mangos at much cheaper prices than in Victoria). Such assumption could be evaluated, however are outside the scope of this investigation.  
+
+Frugl allows filtering of products into a selection of distinct native categories, for example HEALTH & BEAUTY or BAKING. Categories were chosen based on the likelyhood of containing identical products. For example 'Nivea Moisturiser 200g' is manufactured and thus identical between Coles and Woolworths stores, whereas Coles may stock 'Fresh Celery 250g' while Woolworths may stock 'Farm Fresh Celery 225g'. These subtle differences make comparison harder, and so products like the latter were ignored. For the products sampled, the native categories and their respective item counts will be explored below.  
+
+For each item four prices were recorded; i. Coles Full Price, ii. Coles Sale Price, iii. Woolworths Full Price & iv. Woolworths Sale Price. If the item was not on sale, the full price was simply recorded into both the full price and the sale column. This was done to for ease of data processing, as delta = 0 between the full price and sale column (within either the Coles or Woolworths categories) will indicate the item is not presently on sale.  
 
 Data was collated into a Google Sheet, which was pulled directly into the R Markdown environment. See below for data structure and importation methology.
 
-## Load Packages and Data
-```{r}
+#### Load Packages and Data
+```{r, eval=FALSE}
 library(car)
 library(ggplot2)
 library(dplyr)
@@ -37,34 +47,32 @@ library(gridExtra)
 library("htmltools")
 library(reshape2)
 ds <- gsheet2tbl('https://drive.google.com/open?id=1_6RZ0HXg7VbgO78oyFfUyZaFOUHYWijy8XH1_jw5tA4')
-###Note - "Overall Coles in cheaper, in category x coles in cheaper... and so on"
 ```
+#### Summary Statistics, Data Checking and Initial Visualization
+The importation of the data set from Google Sheets as 'ds' was checked with summary, and the attribute names were also checked using sapply. During data collection, identical items available at both Coles and Woolworths were chosen. These items came from the following native categories on the Frugl website - BAKING, DAIRY & EGGS DIETARY, HEALTH & LIFESTYLE, DRINKS, FROZEN FOOD, HEALTH & BEAUTY, PACKAGED & READY MEALS and PANTRY, value counts can be seen below.  
 
-## Summary Statistics
+During data collection, these items were re-categorized into the following categories - Beauty, Diet/ Gym Food, Sugary Snack and Supplement, value counts can also be seen below. For this investigation the allocated categories will be used, as they contain the same number of products but spread over fewer groupings. In many cases the allocated categories more accuratly group the products. For example `table(ds$"Allocated Category")` see four items that can be accurately categorized together as sugary snacks.
 
-### Data Checking and Initial Visualization
-The importation of the data set from Google Sheets as 'ds' was checked with summary, and the attribute names were also checked using sapply. During data collection, identical items available at both Coles and Woolworths were chosen. These items came from the following native categories on the Frugl website - BAKING, DAIRY & EGGS DIETARY, HEALTH & LIFESTYLE, DRINKS, FROZEN FOOD, HEALTH & BEAUTY, PACKAGED & READY MEALS and PANTRY, value counts can be seen below. During data collection, these items were re-categorized into the following categories - Beauty, Diet/ Gym Food, Sugary Snack and Supplement, value counts can also be seen below. For this investigation the allocated categories will be used, as they contain the same number of products but spread over fewer groupings. In many cases the allocated categories more accuratly group the products. For example in the code block "#Exploring the Allocated Categories" we see four items that can be accurately categorized together as sugary snacks.
 ```{r}
-#Displaying summary statistics
+## Summary
 summary(ds)
 ```
 ```{r}
-#Checking the column names and corresponding data types
+## Checking the column names and corresponding data types
 sapply(ds, typeof)
 ```
 ```{r}
-#Value counts for the native categories
+## Value counts for the native categories
 table(ds$`Native Category`)
 ```
 ```{r}
-#Value counts for the allocated categories
+## Value counts for the allocated categories
 table(ds$`Allocated Category`)
 ```
 ```{r}
-#Exploring the Allocated Categories
+## Exploring the Allocated Categories
 ds[c(281,286,291,300),c(2,3,4)]
 ```
-The attributes "Unit" and "Amount" refer to the unit of measurement the product comes in and the amount, respectively (see exploration code blocks below). Value counts were used to check the categorical attribute Unit. A scatter plot was used explore amount.
 ```{r}
 #Exploring Unit and Amount - Data Selection
 ds[c(9,47,17,234,283,409),c(2,4,9,10)]
@@ -73,6 +81,9 @@ ds[c(9,47,17,234,283,409),c(2,4,9,10)]
 #Value Counts for Unit
 table(ds$`Unit`)
 ```
+The attributes "Unit" and "Amount" refer to the unit of measurement the product comes in and the amount, respectively (see exploration code blocks below). Value counts were used to check the categorical attribute Unit.  
+
+A scatter plot and a stacked histogram were used explore amount.
 ```{r}
 #Exploring Unit and Amount - Dot Plot
 qplot(data=ds, x=Amount, y=ds$`Allocated Category`, colour = ds$`Allocated Category`, main = 'Dot Plot of Allocated Category vs Amount',  ylab = 'Allocated Category', xlab = 'Amount (g, mL, pack)') + theme(legend.title=element_blank())
@@ -81,10 +92,10 @@ qplot(data=ds, x=Amount, y=ds$`Allocated Category`, colour = ds$`Allocated Categ
 #Exploring Unit and Amount - Stacked Histogram
 qplot(data=ds, x=Amount, fill = ds$`Allocated Category`, colour = I("Black"), main = 'Stacked Histogram of Allocated Category vs Amount', xlab = 'Amount (g, mL, pack)') + theme(legend.title=element_blank())
 ```
-The exploration up until this point has highlighted numerous challenges working with the data set. The products are distributed between three units, grams (g), milli litres (mL) & pack. Pack has a different meaning in the context of the products. For example (refer to the exploring unit and amount code block above) Tresemme Extra Hold Hair Spray (75g) has units g, with an amount of 75. John Frieda Medium Ash Blonde Hair Colour (1 pack) has the unit pack (not volume or mass) and a quantity of one. In the Supplement category Ostelin Vitamin D & Calcium Tablets (180 pack) has unit pack and quantity 180. The data will be explored further and standardised, as described below.
+The exploration up until this point has highlighted numerous challenges working with the data set. The products are distributed between three units, grams (g), milli litres (mL) & pack. Pack has a different meaning in the context of the products. For example `ds[c(9,47,17,234,283,409),c(2,4,9,10)]` shows Tresemme Extra Hold Hair Spray (75g) has units g, with an amount of 75. John Frieda Medium Ash Blonde Hair Colour (1 pack) has the unit pack (not volume or mass) and a quantity of one. In the Supplement category Ostelin Vitamin D & Calcium Tablets (180 pack) has unit pack and quantity 180. The data will be explored further and preprocessed, as described below.
 
-### Exploring the Native Continuous Data with Scatter Plots
-Prior to any transformations, the data was also explored with scatterplots (see below).  
+#### Exploring the Native Continuous Data with Scatter Plots
+Prior to any transformations, the data was also explored in a qualitative fashion with scatterplots (see below).  
 ```{r}
 wwVcoles <- ggplot(data=ds, aes(x=Coles, y=Woolworths, colour = ds$`Allocated Category`)) +
   stat_smooth(method = "lm", col = "black", size = 0.5) +
@@ -110,26 +121,25 @@ wwSaleVcolesSale <- ggplot(data=ds, aes(x=ds$'Coles Sale', y=ds$'Woolworths Sale
   annotate("text", x = 15, y = 1, label = format(summary(lm(ds$'Woolworths Sale' ~ ds$'Coles Sale', data = ds))$r.squared, digits = 3))
 wwSaleVcolesSale
 ```
+The scatter show (qualitively), that the full price between Woolworhts and Coles is quite well correlated, while the sale price between Woolworths and Coles is poorly correlated by comparison (R squared of 0.988 and 0.735, respectively). This indicates that Coles and Woolworths employ different sale pricing stratergy.
 
-###
+#### Bar Charts of Native Data
+These data were plotted into bar charts for Woolworths (denoted WW), Woolworths Sale (denoted WW Sale), Coles and Coles Sale.  
 
+As mentioned prior, these data contain a variety of volumes / units / quantites. The plot below shows the "Beauty" allocated category gives no outliers accrross the four plots, and has well distributed bounds. "Beauty" will be left as is for the subsequent analysis. "Sugary Snack" & "Diet/ Gym Food" will be converted all into price per unit 1000 g. For this exercise we will assume 1 g = 1 mL (a reasonable assumption as any liquids from these categories will be mostly water, and 1 mL water has 1 g of mass). "Supplement" has minimal outliers and well distributed bounds, and will be left as is for the subsequent analysis.
 ```{r}
 colesHist <- ggplot(data=ds, aes(x=ds$'Allocated Category', y=Coles, fill = ds$`Allocated Category`)) + geom_boxplot() + theme(legend.title=element_blank()) + labs(title = NULL,  x = "Coles", y = NULL) + guides(fill = FALSE) + coord_flip() + scale_y_continuous(limits = c(0,55), expand = c(0, 0))
 colesSaleHist <- ggplot(data=ds, aes(x=ds$'Allocated Category', y=ds$`Coles Sale`, fill = ds$`Allocated Category`)) + geom_boxplot() + theme(legend.title=element_blank()) + labs(title = NULL,  x = "Coles Sale", y = NULL) + guides(fill = FALSE) + coord_flip() + scale_y_continuous(limits = c(0,55), expand = c(0, 0))
 wwHist <- ggplot(data=ds, aes(x=ds$'Allocated Category', y=Woolworths, fill = ds$`Allocated Category`)) + geom_boxplot() + theme(legend.title=element_blank()) + labs(title = NULL,  x = "WW", y = NULL) + guides(fill = FALSE) + coord_flip() + scale_y_continuous(limits = c(0,55), expand = c(0, 0))
 wwSaleHist <- ggplot(data=ds, aes(x=ds$'Allocated Category', y=ds$`Woolworths Sale`, fill = ds$`Allocated Category`)) + geom_boxplot() + theme(legend.title=element_blank()) + labs(title = NULL, x = "WW Sale", y = NULL) + guides(fill = FALSE) + coord_flip() + scale_y_continuous(limits = c(0,55), expand = c(0, 0))
 ```
-
 ```{r}
 grid.arrange(colesHist, colesSaleHist, wwHist, wwSaleHist, nrow = 4)
 ```
 
-## Restructuring the Data
-
-## Filtering for Specific Rows (Allocated Category = Beauty, Sugary Snack, Diet / Gym Food, Supplment)
-Line 1 = Creating the filter
-Line 2 = Creating the dataset (for Coles, Coles Sale, Woolworths, Woolworths Sale)
-```{r}
+#### Restructuring the Data
+These data were broken into their respective categories.
+```{r breaking up categories, echo=TRUE}
 beauty_filter <- ds$`Allocated Category` == "Beauty"
 beauty_data <- ds[beauty_filter,]
 sugarySnack_filter <- ds$`Allocated Category` == "Sugary Snack"
@@ -139,8 +149,7 @@ dietGymFood_data <- ds[dietGymFood_filter,]
 supplement_filter <- ds$`Allocated Category` == "Supplement"
 supplement_data <- ds[supplement_filter,]
 ```
-
-### Checking the resultant units
+Resultant units were breifly checked.
 ```{r}
 #Value Counts for Unit
 table(sugarySnack_data$`Unit`)
@@ -149,38 +158,29 @@ table(sugarySnack_data$`Unit`)
 #Value Counts for Unit
 table(dietGymFood_data$`Unit`)
 ```
-
-```{r}
-#Price per 1000g for Sugary 
+Price per 1000g was generated for "Sugary Snack".
+```{r Price per 1000g for Sugary Snack , echo=TRUE}
 sugarySnack_data$PriceMass <- 1000 / sugarySnack_data$Amount
-sugarySnack_data$Per1000gPrice_Coles <- sugarySnack_data$PriceMass * sugarySnack_data$Coles
-sugarySnack_data$Per1000gPrice_WW <- sugarySnack_data$PriceMass * sugarySnack_data$Woolworths
-sugarySnack_data$Per1000gPrice_ColesSale <- sugarySnack_data$PriceMass * sugarySnack_data$'Coles Sale'
-sugarySnack_data$Per1000gPrice_WWSale <- sugarySnack_data$PriceMass * sugarySnack_data$'Woolworths Sale'
+sugarySnack_data$Per1000gPrice_Coles <- sugarySnack_data$PriceMass*sugarySnack_data$Coles
+sugarySnack_data$Per1000gPrice_WW <- sugarySnack_data$PriceMass*sugarySnack_data$Woolworths
+sugarySnack_data$Per1000gPrice_ColesSale <- sugarySnack_data$PriceMass*sugarySnack_data$'Coles Sale'
+sugarySnack_data$Per1000gPrice_WWSale <- sugarySnack_data$PriceMass*sugarySnack_data$'Woolworths Sale'
 ```
-
-```{r}
-#Price per 1000g for Sugary 
+Price per 1000g was generated for "Diet/ Gym Food".
+```{r Price per 1000g for Diet Gym Food, echo=TRUE}
 dietGymFood_data$PriceMass <- 1000 / dietGymFood_data$Amount
 dietGymFood_data$Per1000gPrice_Coles <- dietGymFood_data$PriceMass * dietGymFood_data$Coles
 dietGymFood_data$Per1000gPrice_WW <- dietGymFood_data$PriceMass * dietGymFood_data$Woolworths
 dietGymFood_data$Per1000gPrice_ColesSale <- dietGymFood_data$PriceMass * dietGymFood_data$'Coles Sale'
 dietGymFood_data$Per1000gPrice_WWSale <- dietGymFood_data$PriceMass * dietGymFood_data$'Woolworths Sale'
 ```
-
-### For the sake of expediency, quantile-quantile plots were used to assess the results of normalization to price per 1000 g or 1000 ml for Sugary Snacks and Diet / Gym Food.
-
-```{r}
-#Exploring Unit and Amount - Data Selection
-summary(dietGymFood_data)
-```
-
+These data were exported to .csv and recombined with the Beauty and Supplment data to give dsAdjusted.
 ```{r}
 write.csv(dietGymFood_data, file = "DietGymFood.csv")
 write.csv(sugarySnack_data, file = "SugarySnack.csv")
 dsAdjusted <- gsheet2tbl('https://docs.google.com/spreadsheets/d/1VQh07x0OQaaADhflcZ5YY17bB0Ho9kUsPycBsRFYsIk/edit?usp=sharing')
 ```
-
+#### Box Plot of dsAdjusted
 ```{r}
 colesHistAdjusted <- ggplot(data=dsAdjusted, aes(x=dsAdjusted$'Allocated Category', y=ColesAdjusted, fill = dsAdjusted$`Allocated Category`)) + geom_boxplot() + theme(legend.title=element_blank()) + labs(title = NULL,  x = "Coles Adj.", y = NULL) + guides(fill = FALSE) + coord_flip() + scale_y_continuous(limits = c(0,410), expand = c(0, 0))
 colesSaleHistAdjusted <- ggplot(data=dsAdjusted, aes(x=dsAdjusted$'Allocated Category', y=ColesSaleAdjusted, fill = dsAdjusted$`Allocated Category`)) + geom_boxplot() + theme(legend.title=element_blank()) + labs(title = NULL,  x = "Coles Sale Adj.", y = NULL) + guides(fill = FALSE) + coord_flip() + scale_y_continuous(limits = c(0,410), expand = c(0, 0))
@@ -191,15 +191,13 @@ wwSaleHistAdjusted <- ggplot(data=dsAdjusted, aes(x=dsAdjusted$'Allocated Catego
 ```{r}
 grid.arrange(colesHistAdjusted, colesSaleHistAdjusted, wwHistAdjusted, wwSaleHistAdjusted, nrow = 4)
 ```
-
-```{r}
+Outlier identification was then performed.
+```{r subsetting for outliers, echo=TRUE}
 sugarySnack_filterAdjusted <- dsAdjusted$`Allocated Category` == "Sugary Snack"
 sugarySnack_dataAdjusted <- dsAdjusted[sugarySnack_filterAdjusted,]
 dietGymFood_filterAdjusted <- dsAdjusted$`Allocated Category` == "Diet/ Gym Food"
 dietGymFood_dataAdjusted <- dsAdjusted[dietGymFood_filter,]
 ```
-
-### Outlier Identification
 
 ```{r}
 summary(sugarySnack_dataAdjusted$ColesAdjusted)
@@ -214,25 +212,14 @@ sugarySnack_dataAdjusted[sugarySnack_dataAdjusted$WoolworthsSaleAdjusted > 50,]
 sugarySnack_dataAdjusted[sugarySnack_dataAdjusted$WoolworthsSaleAdjusted == 56.00,]
 ```
 
-All Diet / Gym Contain 2 outliers, will just use Coles Adjusted to find (with > 120)
-
 ```{r}
 dsAdjusted[dsAdjusted$ColesAdjusted > 110,]
 ```
-
-```{r}
-supplement_filterAdjusted <- dsAdjusted$`Allocated Category` == "Supplement"
-supplement_dataAdjusted <- dsAdjusted[supplement_filterAdjusted,]
-```
-
-```{r}
-summary(supplement_dataAdjusted$WoolworthsAdjusted)
-```
-
+The items above were filled with the mean of each category in their respective columns, and data was imported once more as dsAdjusted (name was kept constant for simplicities sake).
 ```{r}
 dsAdjusted <- gsheet2tbl('https://docs.google.com/spreadsheets/d/1C01FHE6Y0gnkEd-gOvbV57Cmd8BXYs0ch1pGDa9aKKs/edit?usp=sharing')
 ```
-
+#### Box Plot of dsAdjusted with Outliers removed
 ```{r}
 colesHistAdjusted <- ggplot(data=dsAdjusted, aes(x=dsAdjusted$'Allocated Category', y=ColesAdjusted, fill = dsAdjusted$`Allocated Category`)) + geom_boxplot() + theme(legend.title=element_blank()) + labs(title = NULL,  x = "Coles Adj.", y = NULL) + guides(fill = FALSE) + coord_flip() + scale_y_continuous(limits = c(0,410), expand = c(0, 0))
 colesSaleHistAdjusted <- ggplot(data=dsAdjusted, aes(x=dsAdjusted$'Allocated Category', y=ColesSaleAdjusted, fill = dsAdjusted$`Allocated Category`)) + geom_boxplot() + theme(legend.title=element_blank()) + labs(title = NULL,  x = "Coles Sale Adj.", y = NULL) + guides(fill = FALSE) + coord_flip() + scale_y_continuous(limits = c(0,410), expand = c(0, 0))
@@ -243,7 +230,7 @@ wwSaleHistAdjusted <- ggplot(data=dsAdjusted, aes(x=dsAdjusted$'Allocated Catego
 ```{r}
 grid.arrange(colesHistAdjusted, colesSaleHistAdjusted, wwHistAdjusted, wwSaleHistAdjusted, nrow = 4)
 ```
-
+#### Scaled Box Plot of dsAdjusted with Outliers removed
 ```{r}
 colesHistAdjusted <- ggplot(data=dsAdjusted, aes(x=dsAdjusted$'Allocated Category', y=ColesAdjusted, fill = dsAdjusted$`Allocated Category`)) + geom_boxplot() + theme(legend.title=element_blank()) + labs(title = NULL,  x = "Coles Adj.", y = NULL) + guides(fill = FALSE) + coord_flip() + scale_y_continuous(limits = c(0,130), expand = c(0, 0))
 colesSaleHistAdjusted <- ggplot(data=dsAdjusted, aes(x=dsAdjusted$'Allocated Category', y=ColesSaleAdjusted, fill = dsAdjusted$`Allocated Category`)) + geom_boxplot() + theme(legend.title=element_blank()) + labs(title = NULL,  x = "Coles Sale Adj.", y = NULL) + guides(fill = FALSE) + coord_flip() + scale_y_continuous(limits = c(0,130), expand = c(0, 0))
@@ -321,22 +308,6 @@ https://www.statsdirect.com/help/basics/p_values.htm
 
 https://statistics.berkeley.edu/computing/r-t-tests 
 
-```{r}
-> x = rnorm(10)
-> y = rnorm(10)
-> t.test(x,y)
-
-        Welch Two Sample t-test
-
-data:  x and y
-t = 1.4896, df = 15.481, p-value = 0.1564
-alternative hypothesis: true difference in means is not equal to 0
-95 percent confidence interval:
- -0.3221869  1.8310421
-sample estimates:
- mean of x  mean of y
- 0.1944866 -0.5599410
-```
 
 ```{r}
 #Is normalization required?
@@ -386,10 +357,10 @@ Interpret the results of the hypothesis test by interpreting the $p$-value and c
 
 Discuss the findings of your investigation. What did you conclude? What were the strengths and limitations of your investigation? What improvements could be made or what would you do differently next time?
 
-1: http://www.wesfarmers.com.au/util/news-media/article/2017/06/22/coles-creates-115-jobs-at-its-milestone-800th-supermarket
-2: http://www.smh.com.au/business/supermarket-duopoly-blamed-for-soaring-food-prices-20091108-i3tn.html
-3: http://www.smh.com.au/business/retail/coles-deepens-price-war-after-slicing-bread-prices-20170712-gxa33p.html
-
+[^1]: http://www.wesfarmers.com.au/util/news-media/article/2017/06/22/coles-creates-115-jobs-at-its-milestone-800th-supermarket
+[^2]: http://www.smh.com.au/business/supermarket-duopoly-blamed-for-soaring-food-prices-20091108-i3tn.html
+[^3]: http://www.smh.com.au/business/retail/coles-deepens-price-war-after-slicing-bread-prices-20170712-gxa33p.html
+[^4]: https://www.frugl.com.au/ 
 
 http://ggplot2.tidyverse.org/reference/theme.html
 http://ggplot2.tidyverse.org/reference/aes_colour_fill_alpha.html
