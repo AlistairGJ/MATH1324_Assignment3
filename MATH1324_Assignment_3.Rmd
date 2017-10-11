@@ -14,11 +14,8 @@ knitr::opts_chunk$set(echo = TRUE)
 * Alistair Grevis-James (s3644119)
 
 ### Executive Statement
+Data was collected online (www.frugl.com.au) for 489 manufactured food / drink products from Coles and Woolworths at sale and full price. These data were split into four categories, Beauty (n = 205), Sugary Snack (n = 128), Diet/ Gym Food (n = 68) & Supplement (n = 88). After data exploration, visualization and data preprocessing, paired sample t-tests were used to test for a significant mean difference between Woolworths Sale and Coles Sale prices. For all categories (n = 489) the mean difference was found to be 1.69 (SD = 8.68), with t(df=488) = 4.30, p < 0.001, 95% [0.91, 2.46], Woolworths sale items were statistically significantly lower than Coles sale in price. For Beauty (n = 205) the mean difference was found to be 0.16 (SD = 3.78), with t(df=204) = 0.62, p < 0.54, 95% [-0.36, 068], no statistically significantly difference was found between Woolworths Sale and Coles sale in price. For Sugary Snack, per 1000 g, (n = 128) the mean difference was found to be 3.08 (SD = 10.60), with t(df=127) = 3.29, p < 0.001, 95% [1.23, 4.93], Woolworths sale items were statistically significantly lower than Coles sale in price. For Diet/ Gym Food (n = 68) the mean difference was found to be 2.17 (SD = 15.06), with t(df=67) = 1.19, p < 0.23, 95% [-1.47, 5.82], no statistically significantly difference was found between Woolworths Sale and Coles sale in price. For Supplement (n = 88) the mean difference was found to be 2.83 (SD = 6.36), with t(df=87) = 4.18, p < 0.001, 95% [1.48, 4.18], Woolworths sale items were statistically significantly lower than Coles sale in price. QQ plots were not used due to all sample and subsample sizes (n > 30, normality assumed). The `granovo.ds()` function was used to provide for all Sale data to provide dependent sample assessment plots and summary stats (modulus values were taken as order was not relevant).  
 
-
-A paired-samples tt-test was used to test for a significant mean difference between stress levels before and after exercise. The mean difference following exercise was found to be -3.93 (SD = 5.68). Visual inspection of the Q-Q plot of the difference scores suggested that the data were approximately normally distributed. The paired-samples tt-test found a statistically significant mean difference between stress levels before and after exercise, t(df=14)=−2.68t(df=14)=−2.68, p<.018p<.018, 95% [-7.08 -0.79]. Stress levels were found to be significantly reduced after prisoners engaged in one hour of exercise.
-
-In your own words, provide a brief summary of the investigation. Explain the aim of the investigation, the procedure, sample, variables, main findings and conclusions. Write this section last after you have performed hypothesis testing. (Word count Max: 300 words)
 
 ### Hypothesis
 As both Coles and Woolworths heavily market themselves to be "low cost", over a sample of identical goods (identical being defined as manufactured goods that are stocked at both Coles and Woolworths), they will have the same mean cost.  
@@ -28,10 +25,10 @@ The statistical hypotheses for the paired-samples t-test are as follows:
 * H0:μΔ=0
 * HA:μΔ≠0
 
-#### Introduction
+### Introduction
 Coles Supermarkets Australia Pty Ltd (trading as Coles) and Woolworths Supermarkets (colloquially known as "Woolworths" or "Woolies") were founded in Australia in 1914 and 1924, respectively [^1],[^2]. Together, they make up more than 80% of the Australian market. Both Coles and Woolworths market themselves as extremely price competitive, whilst maintaining high quality products and a wide range [^3]. Over the course of this investigation, we will attempt to prove or disprove our null hypothesis (as outlined above).
 
-#### Data Collection
+### Data Collection
 The price comparison website www.frugl.com.au[^4] was used for data collection. Data was collected over three days (7 Sep, 17 Sep & 18 Sep 2017) within the postcode 3054 (Carlton North, Victoria, Australia). Date was noted as sale items will change with time (and thus collection was performed within an 11 day window). Postcode was kept constant as different regions will presumably have specials and full priced products based on geographies (for example shops in Queensland may sell mangos at much cheaper prices than in Victoria). Such assumption could be evaluated, however are outside the scope of this investigation.  
 
 Frugl allows filtering of products into a selection of distinct native categories, for example HEALTH & BEAUTY or BAKING. Categories were chosen based on the likelyhood of containing identical products. For example 'Nivea Moisturiser 200g' is manufactured and thus identical between Coles and Woolworths stores, whereas Coles may stock 'Fresh Celery 250g' while Woolworths may stock 'Farm Fresh Celery 225g'. These subtle differences make comparison harder, and so products like the latter were ignored. For the products sampled, the native categories and their respective item counts will be explored below.  
@@ -40,7 +37,7 @@ For each item four prices were recorded; i. Coles Full Price, ii. Coles Sale Pri
 
 Data was collated into a Google Sheet, which was pulled directly into the R Markdown environment. See below for data structure and importation methology.
 
-#### Load Packages and Data
+### Load Packages and Data
 ```{r, eval=FALSE}
 library(car)
 library(ggplot2)
@@ -52,7 +49,7 @@ library(reshape2)
 library(granova)
 ds <- gsheet2tbl('https://drive.google.com/open?id=1_6RZ0HXg7VbgO78oyFfUyZaFOUHYWijy8XH1_jw5tA4')
 ```
-#### Summary Statistics, Data Checking and Initial Visualization
+### Summary Statistics, Data Checking and Initial Visualization
 The importation of the data set from Google Sheets as 'ds' was checked with summary, and the attribute names were also checked using sapply. During data collection, identical items available at both Coles and Woolworths were chosen. These items came from the following native categories on the Frugl website - BAKING, DAIRY & EGGS DIETARY, HEALTH & LIFESTYLE, DRINKS, FROZEN FOOD, HEALTH & BEAUTY, PACKAGED & READY MEALS and PANTRY, value counts can be seen below.  
 
 During data collection, these items were re-categorized into the following categories - Beauty, Diet/ Gym Food, Sugary Snack and Supplement, value counts can also be seen below. For this investigation the allocated categories will be used, as they contain the same number of products but spread over fewer groupings. In many cases the allocated categories more accuratly group the products. For example `table(ds$"Allocated Category")` see four items that can be accurately categorized together as sugary snacks.
@@ -88,19 +85,19 @@ table(ds$`Unit`)
 The attributes "Unit" and "Amount" refer to the unit of measurement the product comes in and the amount, respectively (see exploration code blocks below). Value counts were used to check the categorical attribute Unit.  
 
 A scatter plot and a stacked histogram were used explore amount.
-```{r}
+```{r, echo = FALSE}
 #Exploring Unit and Amount - Dot Plot
 qplot(data=ds, x=Amount, y=ds$`Allocated Category`, colour = ds$`Allocated Category`, main = 'Dot Plot of Allocated Category vs Amount',  ylab = 'Allocated Category', xlab = 'Amount (g, mL, pack)') + theme(legend.title=element_blank())
 ```
-```{r}
+```{r, echo = FALSE}
 #Exploring Unit and Amount - Stacked Histogram
 qplot(data=ds, x=Amount, fill = ds$`Allocated Category`, colour = I("Black"), main = 'Stacked Histogram of Allocated Category vs Amount', xlab = 'Amount (g, mL, pack)') + theme(legend.title=element_blank())
 ```
 The exploration up until this point has highlighted numerous challenges working with the data set. The products are distributed between three units, grams (g), milli litres (mL) & pack. Pack has a different meaning in the context of the products. For example `ds[c(9,47,17,234,283,409),c(2,4,9,10)]` shows Tresemme Extra Hold Hair Spray (75g) has units g, with an amount of 75. John Frieda Medium Ash Blonde Hair Colour (1 pack) has the unit pack (not volume or mass) and a quantity of one. In the Supplement category Ostelin Vitamin D & Calcium Tablets (180 pack) has unit pack and quantity 180. The data will be explored further and preprocessed, as described below.
 
-#### Exploring the Native Continuous Data with Scatter Plots
+### Exploring the Native Continuous Data with Scatter Plots
 Prior to any transformations, the data was also explored in a qualitative fashion with scatterplots (see below).  
-```{r}
+```{r, echo = FALSE}
 wwVcoles <- ggplot(data=ds, aes(x=Coles, y=Woolworths, colour = ds$`Allocated Category`)) +
   stat_smooth(method = "lm", col = "black", size = 0.5) +
   geom_point() + 
@@ -113,7 +110,7 @@ wwVcoles <- ggplot(data=ds, aes(x=Coles, y=Woolworths, colour = ds$`Allocated Ca
 wwVcoles
 ```
 
-```{r}
+```{r, echo = FALSE}
 wwSaleVcolesSale <- ggplot(data=ds, aes(x=ds$'Coles Sale', y=ds$'Woolworths Sale', colour = ds$`Allocated Category`)) +
   stat_smooth(method = "lm", col = "black", size = 0.5) +
   geom_point() + 
@@ -127,21 +124,21 @@ wwSaleVcolesSale
 ```
 The scatter show (qualitively), that the full price between Woolworhts and Coles is quite well correlated, while the sale price between Woolworths and Coles is poorly correlated by comparison (R squared of 0.988 and 0.735, respectively). This indicates that Coles and Woolworths employ different sale pricing stratergy.
 
-#### Bar Charts of Native Data
+### Bar Charts of Native Data
 These data were plotted into bar charts for Woolworths (denoted WW), Woolworths Sale (denoted WW Sale), Coles and Coles Sale.  
 
 As mentioned prior, these data contain a variety of volumes / units / quantites. The plot below shows the "Beauty" allocated category gives no outliers accrross the four plots, and has well distributed bounds. "Beauty" will be left as is for the subsequent analysis. "Sugary Snack" & "Diet/ Gym Food" will be converted all into price per unit 1000 g. For this exercise we will assume 1 g = 1 mL (a reasonable assumption as any liquids from these categories will be mostly water, and 1 mL water has 1 g of mass). "Supplement" has minimal outliers and well distributed bounds, and will be left as is for the subsequent analysis.
-```{r}
+```{r, echo = FALSE}
 colesHist <- ggplot(data=ds, aes(x=ds$'Allocated Category', y=Coles, fill = ds$`Allocated Category`)) + geom_boxplot() + theme(legend.title=element_blank()) + labs(title = NULL,  x = "Coles", y = NULL) + guides(fill = FALSE) + coord_flip() + scale_y_continuous(limits = c(0,55), expand = c(0, 0))
 colesSaleHist <- ggplot(data=ds, aes(x=ds$'Allocated Category', y=ds$`Coles Sale`, fill = ds$`Allocated Category`)) + geom_boxplot() + theme(legend.title=element_blank()) + labs(title = NULL,  x = "Coles Sale", y = NULL) + guides(fill = FALSE) + coord_flip() + scale_y_continuous(limits = c(0,55), expand = c(0, 0))
 wwHist <- ggplot(data=ds, aes(x=ds$'Allocated Category', y=Woolworths, fill = ds$`Allocated Category`)) + geom_boxplot() + theme(legend.title=element_blank()) + labs(title = NULL,  x = "WW", y = NULL) + guides(fill = FALSE) + coord_flip() + scale_y_continuous(limits = c(0,55), expand = c(0, 0))
 wwSaleHist <- ggplot(data=ds, aes(x=ds$'Allocated Category', y=ds$`Woolworths Sale`, fill = ds$`Allocated Category`)) + geom_boxplot() + theme(legend.title=element_blank()) + labs(title = NULL, x = "WW Sale", y = NULL) + guides(fill = FALSE) + coord_flip() + scale_y_continuous(limits = c(0,55), expand = c(0, 0))
 ```
-```{r}
+```{r, echo = FALSE}
 grid.arrange(colesHist, colesSaleHist, wwHist, wwSaleHist, nrow = 4)
 ```
 
-#### Restructuring the Data
+### Restructuring the Data
 These data were broken into their respective categories.
 ```{r breaking up categories, echo=TRUE}
 beauty_filter <- ds$`Allocated Category` == "Beauty"
@@ -185,14 +182,14 @@ write.csv(sugarySnack_data, file = "SugarySnack.csv")
 dsAdjusted <- gsheet2tbl('https://docs.google.com/spreadsheets/d/1VQh07x0OQaaADhflcZ5YY17bB0Ho9kUsPycBsRFYsIk/edit?usp=sharing')
 ```
 #### Box Plot of dsAdjusted
-```{r}
+```{r, echo = FALSE}
 colesHistAdjusted <- ggplot(data=dsAdjusted, aes(x=dsAdjusted$'Allocated Category', y=ColesAdjusted, fill = dsAdjusted$`Allocated Category`)) + geom_boxplot() + theme(legend.title=element_blank()) + labs(title = NULL,  x = "Coles Adj.", y = NULL) + guides(fill = FALSE) + coord_flip() + scale_y_continuous(limits = c(0,410), expand = c(0, 0))
 colesSaleHistAdjusted <- ggplot(data=dsAdjusted, aes(x=dsAdjusted$'Allocated Category', y=ColesSaleAdjusted, fill = dsAdjusted$`Allocated Category`)) + geom_boxplot() + theme(legend.title=element_blank()) + labs(title = NULL,  x = "Coles Sale Adj.", y = NULL) + guides(fill = FALSE) + coord_flip() + scale_y_continuous(limits = c(0,410), expand = c(0, 0))
 wwHistAdjusted <- ggplot(data=dsAdjusted, aes(x=dsAdjusted$'Allocated Category', y=WoolworthsAdjusted, fill = dsAdjusted$`Allocated Category`)) + geom_boxplot() + theme(legend.title=element_blank()) + labs(title = NULL,  x = "WW Adj.", y = NULL) + guides(fill = FALSE) + coord_flip() + scale_y_continuous(limits = c(0,410), expand = c(0, 0))
 wwSaleHistAdjusted <- ggplot(data=dsAdjusted, aes(x=dsAdjusted$'Allocated Category', y=WoolworthsSaleAdjusted, fill = dsAdjusted$`Allocated Category`)) + geom_boxplot() + theme(legend.title=element_blank()) + labs(title = NULL, x = "WW Sale Adj.", y = NULL) + guides(fill = FALSE) + coord_flip() + scale_y_continuous(limits = c(0,410), expand = c(0, 0))
 ```
 
-```{r}
+```{r, echo = FALSE}
 grid.arrange(colesHistAdjusted, colesSaleHistAdjusted, wwHistAdjusted, wwSaleHistAdjusted, nrow = 4)
 ```
 Outlier identification was then performed.
@@ -224,25 +221,25 @@ The items above were filled with the mean of each category in their respective c
 dsAdjusted <- gsheet2tbl('https://docs.google.com/spreadsheets/d/1C01FHE6Y0gnkEd-gOvbV57Cmd8BXYs0ch1pGDa9aKKs/edit?usp=sharing')
 ```
 #### Box Plot of dsAdjusted with Outliers removed
-```{r}
+```{r, echo = FALSE}
 colesHistAdjusted <- ggplot(data=dsAdjusted, aes(x=dsAdjusted$'Allocated Category', y=ColesAdjusted, fill = dsAdjusted$`Allocated Category`)) + geom_boxplot() + theme(legend.title=element_blank()) + labs(title = NULL,  x = "Coles Adj.", y = NULL) + guides(fill = FALSE) + coord_flip() + scale_y_continuous(limits = c(0,410), expand = c(0, 0))
 colesSaleHistAdjusted <- ggplot(data=dsAdjusted, aes(x=dsAdjusted$'Allocated Category', y=ColesSaleAdjusted, fill = dsAdjusted$`Allocated Category`)) + geom_boxplot() + theme(legend.title=element_blank()) + labs(title = NULL,  x = "Coles Sale Adj.", y = NULL) + guides(fill = FALSE) + coord_flip() + scale_y_continuous(limits = c(0,410), expand = c(0, 0))
 wwHistAdjusted <- ggplot(data=dsAdjusted, aes(x=dsAdjusted$'Allocated Category', y=WoolworthsAdjusted, fill = dsAdjusted$`Allocated Category`)) + geom_boxplot() + theme(legend.title=element_blank()) + labs(title = NULL,  x = "WW Adj.", y = NULL) + guides(fill = FALSE) + coord_flip() + scale_y_continuous(limits = c(0,410), expand = c(0, 0))
 wwSaleHistAdjusted <- ggplot(data=dsAdjusted, aes(x=dsAdjusted$'Allocated Category', y=WoolworthsSaleAdjusted, fill = dsAdjusted$`Allocated Category`)) + geom_boxplot() + theme(legend.title=element_blank()) + labs(title = NULL, x = "WW Sale Adj.", y = NULL) + guides(fill = FALSE) + coord_flip() + scale_y_continuous(limits = c(0,410), expand = c(0, 0))
 ```
 
-```{r}
+```{r, echo = FALSE}
 grid.arrange(colesHistAdjusted, colesSaleHistAdjusted, wwHistAdjusted, wwSaleHistAdjusted, nrow = 4)
 ```
 #### Scaled Box Plot of dsAdjusted with Outliers removed
-```{r}
+```{r, echo = FALSE}
 colesHistAdjusted <- ggplot(data=dsAdjusted, aes(x=dsAdjusted$'Allocated Category', y=ColesAdjusted, fill = dsAdjusted$`Allocated Category`)) + geom_boxplot() + theme(legend.title=element_blank()) + labs(title = NULL,  x = "Coles Adj.", y = NULL) + guides(fill = FALSE) + coord_flip() + scale_y_continuous(limits = c(0,130), expand = c(0, 0))
 colesSaleHistAdjusted <- ggplot(data=dsAdjusted, aes(x=dsAdjusted$'Allocated Category', y=ColesSaleAdjusted, fill = dsAdjusted$`Allocated Category`)) + geom_boxplot() + theme(legend.title=element_blank()) + labs(title = NULL,  x = "Coles Sale Adj.", y = NULL) + guides(fill = FALSE) + coord_flip() + scale_y_continuous(limits = c(0,130), expand = c(0, 0))
 wwHistAdjusted <- ggplot(data=dsAdjusted, aes(x=dsAdjusted$'Allocated Category', y=WoolworthsAdjusted, fill = dsAdjusted$`Allocated Category`)) + geom_boxplot() + theme(legend.title=element_blank()) + labs(title = NULL,  x = "WW Adj.", y = NULL) + guides(fill = FALSE) + coord_flip() + scale_y_continuous(limits = c(0,130), expand = c(0, 0))
 wwSaleHistAdjusted <- ggplot(data=dsAdjusted, aes(x=dsAdjusted$'Allocated Category', y=WoolworthsSaleAdjusted, fill = dsAdjusted$`Allocated Category`)) + geom_boxplot() + theme(legend.title=element_blank()) + labs(title = NULL, x = "WW Sale Adj.", y = NULL) + guides(fill = FALSE) + coord_flip() + scale_y_continuous(limits = c(0,130), expand = c(0, 0))
 ```
 
-```{r}
+```{r, echo = FALSE}
 grid.arrange(colesHistAdjusted, colesSaleHistAdjusted, wwHistAdjusted, wwSaleHistAdjusted, nrow = 4)
 ```
 These data will now be prepared for paired sample hypothesis testing, through the introduction of a difference attribute (d) in the `dsAdjusted` data set. Only Coles SALE and Woolworths SALE data will be considered moving forward. Analysis of full price versus sale price is outside the scope of this investigation.
@@ -341,49 +338,49 @@ supplement_data_d %>%
 We will now perform paired sample t-tests.  
 
 #### Paired Sample t-test - All Categories
-```{r}
+```{r, echo = FALSE}
 t.test(dsAdjusted$ColesSaleAdjusted, dsAdjusted$WoolworthsSaleAdjusted, paired = TRUE, alternative = "two.sided")
 ```
 #### Paired Sample t-test - Beauty Category
-```{r}
+```{r, echo = FALSE}
 t.test(beauty_data_d$ColesSaleAdjusted, beauty_data_d$WoolworthsSaleAdjusted, paired = TRUE, alternative = "two.sided")
 ```
 #### Paired Sample t-test - Sugary Snack Category (per 1000 g)
-```{r}
+```{r, echo = FALSE}
 t.test(sugarySnack_data_d$ColesSaleAdjusted, sugarySnack_data_d$WoolworthsSaleAdjusted, paired = TRUE, alternative = "two.sided")
 ```
 #### Paired Sample t-test - Diet/ Gym Food Category (per 1000 g)
-```{r}
+```{r, echo = FALSE}
 t.test(dietGymFood_data_d$ColesSaleAdjusted, dietGymFood_data_d$WoolworthsSaleAdjusted, paired = TRUE, alternative = "two.sided")
 ```
 #### Paired Sample t-test - Supplement Category
-```{r}
+```{r, echo = FALSE}
 t.test(supplement_data_d$ColesSaleAdjusted, supplement_data_d$WoolworthsSaleAdjusted, paired = TRUE, alternative = "two.sided")
 ```
 The critical value, t∗ for the paired-sample t-test (assuming a two-tailed test with α=0.05) was then calculated.
 
 #### Critical Value - All Categories
-```{r}
+```{r, echo = FALSE}
 qt(p = 0.025, df = 488)
 ```
 
 #### Critical Value - Beauty Category
-```{r}
+```{r, echo = FALSE}
 qt(p = 0.025, df = 204)
 ```
 
 #### Critical Value - Sugary Snack Category (per 1000 g)
-```{r}
+```{r, echo = FALSE}
 qt(p = 0.025, df = 127)
 ```
 
 #### Critical Value - Diet/ Gym Food Category (per 1000 g)
-```{r}
+```{r, echo = FALSE}
 qt(p = 0.025, df = 67)
 ```
 
 #### Critical Value - Supplement Category
-```{r}
+```{r, echo = FALSE}
 qt(p = 0.025, df = 87)
 ```
 
@@ -408,7 +405,7 @@ The t* values are ± 1.99. As t = 4.18 is more extreme than + 1.99, H0 should be
 
 #### All Categories
 
-```{r}
+```{r, echo = FALSE}
 granova.ds(
   data.frame(dsAdjusted$WoolworthsSaleAdjusted, dsAdjusted$ColesSaleAdjusted),
   xlab = "Woolworths Sale Adjusted",
@@ -418,7 +415,7 @@ granova.ds(
 
 #### Beauty Category
 
-```{r}
+```{r, echo = FALSE}
 granova.ds(
   data.frame(beauty_data_d$WoolworthsSaleAdjusted, beauty_data_d$ColesSaleAdjusted),
   xlab = "Beauty - Woolworths Sale Adjusted",
@@ -428,7 +425,7 @@ granova.ds(
 
 #### Sugary Snack Category (per 1000 g)
 
-```{r}
+```{r, echo = FALSE}
 granova.ds(
   data.frame(sugarySnack_data_d$WoolworthsSaleAdjusted, sugarySnack_data_d$ColesSaleAdjusted),
   xlab = "Sugary Snack (1000 g) - Woolworths Sale Adjusted",
@@ -438,7 +435,7 @@ granova.ds(
 
 #### Diet/ Gym Food Category (per 1000 g)
 
-```{r}
+```{r, echo = FALSE}
 granova.ds(
   data.frame(dietGymFood_data_d$WoolworthsSaleAdjusted, dietGymFood_data_d$ColesSaleAdjusted),
   xlab = "Diet/ Gym Food (1000 g) - Woolworths Sale Adjusted",
@@ -448,7 +445,7 @@ granova.ds(
 
 #### Supplement Category
 
-```{r}
+```{r, echo = FALSE}
 granova.ds(
   data.frame(supplement_data_d$WoolworthsSaleAdjusted, supplement_data_d$ColesSaleAdjusted),
   xlab = "Supplement - Woolworths Sale Adjusted",
@@ -470,7 +467,7 @@ The following was determined over the duration of the investigation,
 
 * There was a statistically significant mean difference between the Woolworths Sale and Coles Sale prices in the supplement category. The `granovo.ds()` function summary stats show WW Sale to have a mean value of AUD 16.89, while Coles Sale has a mean value of AUD 19.72. Woolworths Sale is cheaper over the supplment category.
 
-The strengths of the investigation included high sample size (overall and in sub-categories), controls of sampling in one postcode over a period of only 11 days and choosing manufactured items that were identical. Limitations include working with the sale data (as full price items not on sale were included here). Full prices overall may be more stable with time, and thus a better representation of the price of the supermarket overall. Next time sampling at time intervals (t = 1 month, over 24 months) could be performed at full price in one postcode.
+The strengths of the investigation included high sample size (overall and in sub-categories), controls of sampling in one postcode over a period of only 11 days and choosing manufactured items that were identical. Limitations include working with the sale data (as full price items not on sale were included here). Full prices overall may be more stable with time, and thus a better representation of the price of the supermarket overall. For future studies, sampling at time intervals (t = 1 month, over 24 months) could be performed at full price in one postcode.
 
 ### Conclusion
 Data of almost 500 points was collected from Coles, Coles Sale, Woolworths and Woolworths Sale (postcode 3054, Carlton North, Victoria, Australia, 7 Sep 2017 till 18 Sep 2017) accross the categories BAKING, DAIRY & EGGS DIETARY, HEALTH & LIFESTYLE, DRINKS, FROZEN FOOD, HEALTH & BEAUTY, PACKAGED & READY MEALS and PANTRY (generalized as Beauty, Diet/ Gym Food, Sugary Snack and Supplement). It was determined that Woolworths Sale had statistically significant lower prices overall, in the sugary snack category and in the supplement category.
