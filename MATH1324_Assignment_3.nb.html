@@ -465,6 +465,12 @@ dsAdjusted &lt;- gsheet2tbl('https://docs.google.com/spreadsheets/d/1VQh07x0OQaa
 <p>Outlier identification was then performed.</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuc3VnYXJ5U25hY2tfZmlsdGVyQWRqdXN0ZWQgPC0gZHNBZGp1c3RlZCRgQWxsb2NhdGVkIENhdGVnb3J5YCA9PSBcIlN1Z2FyeSBTbmFja1wiXG5zdWdhcnlTbmFja19kYXRhQWRqdXN0ZWQgPC0gZHNBZGp1c3RlZFtzdWdhcnlTbmFja19maWx0ZXJBZGp1c3RlZCxdXG5kaWV0R3ltRm9vZF9maWx0ZXJBZGp1c3RlZCA8LSBkc0FkanVzdGVkJGBBbGxvY2F0ZWQgQ2F0ZWdvcnlgID09IFwiRGlldC8gR3ltIEZvb2RcIlxuZGlldEd5bUZvb2RfZGF0YUFkanVzdGVkIDwtIGRzQWRqdXN0ZWRbZGlldEd5bUZvb2RfZmlsdGVyLF1cbmBgYCJ9 -->
+<pre class="r"><code>sugarySnack_filterAdjusted &lt;- dsAdjusted$`Allocated Category` == &quot;Sugary Snack&quot;
+sugarySnack_dataAdjusted &lt;- dsAdjusted[sugarySnack_filterAdjusted,]
+dietGymFood_filterAdjusted &lt;- dsAdjusted$`Allocated Category` == &quot;Diet/ Gym Food&quot;
+dietGymFood_dataAdjusted &lt;- dsAdjusted[dietGymFood_filter,]</code></pre>
+<!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
@@ -520,6 +526,9 @@ dsAdjusted &lt;- gsheet2tbl('https://docs.google.com/spreadsheets/d/1VQh07x0OQaa
 <p>The items above were filled with the mean of each category in their respective columns, and data was imported once more as dsAdjusted (name was kept constant for simplicities sake).</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZHNBZGp1c3RlZCA8LSBnc2hlZXQydGJsKCdodHRwczovL2RvY3MuZ29vZ2xlLmNvbS9zcHJlYWRzaGVldHMvZC8xQzAxRkhFNlkwZ25rRWQtZ092YlY1N0NtZDhCWFlzMGNoMXBHRGE5YUtLcy9lZGl0P3VzcD1zaGFyaW5nJylcbmBgYCJ9 -->
+<pre class="r"><code>dsAdjusted &lt;- gsheet2tbl('https://docs.google.com/spreadsheets/d/1C01FHE6Y0gnkEd-gOvbV57Cmd8BXYs0ch1pGDa9aKKs/edit?usp=sharing')</code></pre>
+<!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 </div>
@@ -553,6 +562,9 @@ dsAdjusted &lt;- gsheet2tbl('https://docs.google.com/spreadsheets/d/1VQh07x0OQaa
 <p>These data will now be prepared for paired sample hypothesis testing, through the introduction of a difference attribute (d) in the <code>dsAdjusted</code> data set. Only Coles SALE and Woolworths SALE data will be considered moving forward. Analysis of full price versus sale price is outside the scope of this investigation.</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZHNBZGp1c3RlZCA8LSBkc0FkanVzdGVkICU+JSBtdXRhdGUoZCA9IENvbGVzU2FsZUFkanVzdGVkIC0gV29vbHdvcnRoc1NhbGVBZGp1c3RlZClcbmBgYCJ9 -->
+<pre class="r"><code>dsAdjusted &lt;- dsAdjusted %&gt;% mutate(d = ColesSaleAdjusted - WoolworthsSaleAdjusted)</code></pre>
+<!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <p>These data are considered to be sufficiently preprocessed for analysis. Paired sample t-testing will be performed on the data set <code>dsAdjusted</code>, on the attribute ‘d’. Due to the nature of the metholodgy (t-test of difference) the remaining outliers will not interfere with the analysis. Due to the size of the data set and the constituent allocated categories (n &gt; 30), we will assume normality. QQ plots were breifly explored, however were deemed to be unesscesary. These data were broken into their constituent categories for processing also.</p>
